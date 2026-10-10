@@ -80,7 +80,12 @@ nav button[aria-current="page"]{background:var(--brand);color:#fff}
 .hero[data-s="hi"]{border-color:var(--hi)}
 .hero h1{font-size:2rem;line-height:1.1}
 .hero p{font-size:1.1rem}
-.home .soilcard{order:2}
+.home .gaugecard{order:2}
+.gaugecard{padding:10px 12px}
+.gaugecard svg{display:block;width:100%;height:auto}
+.glegend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:.85rem;color:var(--mut);margin:2px 0 8px}
+.glegend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.gsep{border:0;border-top:1px solid var(--line);margin:6px 0 8px}
 .duo{order:3;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .stats6{order:4;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .stats6 .card{padding:10px 12px}
@@ -197,7 +202,13 @@ tr:last-child td{border-bottom:0}
   <section class="view on" id="v-home" aria-label="Beranda">
     <div class="page home">
       <div class="col">
-        <div class="card soilcard" id="soilHome"></div>
+        <div class="card gaugecard">
+          <div id="gaugeHome"></div>
+          <div class="glegend"><span><i style="background:#E5584B"></i>Kering</span><span><i style="background:#F2A33A"></i>Agak kering</span><span><i style="background:#2FB463"></i>Ideal</span><span><i style="background:#4D8DFF"></i>Terlalu basah</span></div>
+          <hr class="gsep">
+          <div id="spark"></div>
+          <div class="sm" id="sparkcap" style="text-align:center"></div>
+        </div>
         <div class="duo">
           <div class="card health">
             <svg class="ring" viewBox="0 0 110 110" role="img" aria-label="Skor kesehatan tanah">
@@ -428,7 +439,7 @@ tr:last-child td{border-bottom:0}
   document.querySelectorAll('[data-go]').forEach(function(b){b.addEventListener('click',function(){go(b.dataset.go)})});
   window.addEventListener('hashchange',function(){go(location.hash.slice(1),false)});
 
-  /* ---------- visual tanah (dipakai di Beranda dan Tanah) ---------- */
+  /* ---------- visual tanah (menu Tanah) ---------- */
   var rnd=7;function rand(){rnd=(rnd*9301+49297)%233280;return rnd/233280}
   function soilSVG(p){
     var tops=[56,138,220],hs=[82,82,80],cy=[97,179,260],s='';
@@ -474,8 +485,55 @@ tr:last-child td{border-bottom:0}
     $('#'+p+'pipe').setAttribute('class',st.pump?'pon':'');
     $('#'+p+'plant').setAttribute('transform','rotate('+droop+' 300 58)');
   }
-  $('#soilHome').innerHTML=soilSVG('h');
   $('#soilTanah').innerHTML=soilSVG('x');
+
+  /* ---------- alat ukur kelembapan (Beranda) ---------- */
+  var GCX=180,GCY=160,GR=130;
+  function gpt(v,rad){var a=Math.PI*(1-clamp(v,0,100)/100);return [GCX+rad*Math.cos(a),GCY-rad*Math.sin(a)]}
+  function gaugeSVG(){
+    var s='<svg viewBox="0 0 360 232" role="img" aria-label="Alat ukur kelembapan tanah lapisan atas">';
+    [[0,25,'#E5584B'],[25,40,'#F2A33A'],[40,70,'#2FB463'],[70,100,'#4D8DFF']].forEach(function(z){
+      var a=gpt(z[0],GR),b=gpt(z[1],GR);
+      s+='<path d="M'+a[0].toFixed(1)+' '+a[1].toFixed(1)+'A'+GR+' '+GR+' 0 0 1 '+b[0].toFixed(1)+' '+b[1].toFixed(1)+'" fill="none" stroke="'+z[2]+'" stroke-width="26"/>';
+    });
+    [25,40,70].forEach(function(v){var a=gpt(v,GR-13),b=gpt(v,GR+13);s+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+'" y2="'+b[1].toFixed(1)+'" stroke="#fff" stroke-width="3"/>'});
+    s+='<g font-family="Atkinson Hyperlegible, Arial, sans-serif" font-weight="700" fill="#4A524A" font-size="14">';
+    s+='<text x="'+(GCX-GR)+'" y="184" text-anchor="middle">0%</text><text x="'+(GCX+GR)+'" y="184" text-anchor="middle">100%</text></g>';
+    s+='<line id="gth" stroke="#1B1F1B" stroke-width="4" stroke-linecap="round"/>';
+    s+='<text id="gthT" text-anchor="middle" font-size="13" font-weight="700" fill="#1B1F1B" font-family="Atkinson Hyperlegible, Arial, sans-serif">pompa</text>';
+    s+='<line id="gneedle" x1="'+GCX+'" y1="'+GCY+'" stroke="#1B1F1B" stroke-width="7" stroke-linecap="round"/>';
+    s+='<circle cx="'+GCX+'" cy="'+GCY+'" r="11" fill="#1B1F1B"/>';
+    s+='<text id="gnum" x="'+GCX+'" y="206" text-anchor="middle" font-size="40" font-weight="700" fill="#1B1F1B" font-family="Atkinson Hyperlegible, Arial, sans-serif">--</text>';
+    s+='<text id="gword" x="'+GCX+'" y="227" text-anchor="middle" font-size="17" font-weight="700" font-family="Atkinson Hyperlegible, Arial, sans-serif">&#160;</text>';
+    return s+'</svg>';
+  }
+  var TXT={ok:'#1F7A3A',low:'#B45309',crit:'#B91C1C',hi:'#1D4ED8'};
+  function updateGauge(){
+    var v=st.m[0],l=level(v),n=gpt(v,GR-34),t1=gpt(st.th,GR-16),t2=gpt(st.th,GR+16),tt=gpt(st.th,GR+30);
+    $('#gneedle').setAttribute('x2',n[0].toFixed(1));$('#gneedle').setAttribute('y2',n[1].toFixed(1));
+    $('#gth').setAttribute('x1',t1[0].toFixed(1));$('#gth').setAttribute('y1',t1[1].toFixed(1));
+    $('#gth').setAttribute('x2',t2[0].toFixed(1));$('#gth').setAttribute('y2',t2[1].toFixed(1));
+    $('#gthT').setAttribute('x',Math.max(24,Math.min(336,tt[0])).toFixed(1));$('#gthT').setAttribute('y',(tt[1]+4).toFixed(1));
+    $('#gnum').textContent=Math.round(v)+'%';
+    $('#gword').textContent=l[0];$('#gword').setAttribute('fill',TXT[l[1]]);
+  }
+  $('#gaugeHome').innerHTML=gaugeSVG();
+  function sparkSVG(){
+    var W=360,H=90,pl=4,pr=4,pt=6,pb=6,iw=W-pl-pr,ih=H-pt-pb;
+    function y(v){return pt+ih-(v/100)*ih}
+    var h=st.hist[0],n=h.length,bw=iw/(N-1);
+    function xp(k,n){return pl+(k+(N-n))/(N-1)*iw}
+    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Grafik kecil kelembapan lapisan atas beberapa jam terakhir">';
+    s+='<rect x="'+pl+'" y="'+y(70)+'" width="'+iw+'" height="'+(y(40)-y(70))+'" fill="#1F7A3A" opacity=".12"/>';
+    for(var k=0;k<st.pumpHist.length;k++){if(st.pumpHist[k])s+='<rect x="'+(xp(k,st.pumpHist.length)-bw/2).toFixed(1)+'" y="'+pt+'" width="'+bw.toFixed(1)+'" height="'+ih+'" fill="#1D4ED8" opacity=".15"/>'}
+    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(st.th)+'" y2="'+y(st.th)+'" stroke="#1B1F1B" stroke-width="1.5" stroke-dasharray="5 4"/>';
+    if(n>1){
+      var pts=h.map(function(v,k){return xp(k,n).toFixed(1)+','+y(v).toFixed(1)}).join(' ');
+      s+='<polyline points="'+pts+'" fill="none" stroke="#1D4ED8" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>';
+      s+='<circle cx="'+xp(n-1,n).toFixed(1)+'" cy="'+y(h[n-1]).toFixed(1)+'" r="5" fill="#1D4ED8"/>';
+    }
+    return s+'</svg>';
+  }
 
   /* ---------- skor & perkiraan ---------- */
   function scoreMoist(v){if(v>=40&&v<=70)return 100;if(v<40)return clamp(v/40*100,0,100);return clamp((100-v)/30*100,0,100)}
@@ -571,8 +629,10 @@ tr:last-child td{border-bottom:0}
     var ev=evalCrop(st.crop);
     $('#hcrop').textContent=CROPS[st.crop].n;
     setWord($('#hcropv'),[ev.verdict[0],ev.verdict[1]]);
-    var droop=l0[1]==='crit'?30:(l0[1]==='low'?12:(l0[1]==='hi'?-12:0));
-    updateSoil('h',droop);
+    updateGauge();
+    $('#spark').innerHTML=sparkSVG();
+    var spanH=(N-1)*st.iv/60;
+    $('#sparkcap').textContent='Lapisan atas (10 cm), '+(spanH>=1?Math.round(spanH)+' jam':Math.round(spanH*60)+' menit')+' terakhir. Hijau = ideal, biru = pompa menyala, garis putus-putus = batas pompa.';
     $('#fc').textContent=forecast();
     renderAlerts();
   }
