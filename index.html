@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2E6B34">
-<title>SoilMate – Pantau Kondisi Tanah</title>
+<title>SoilMate – Informasi Tanah untuk Budidaya Padi dan Jagung</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +25,8 @@ body{
   display:grid;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"top" "views" "nav";
 }
 h1,h2,h3,p{margin:0}
-button,input{font:inherit;color:inherit}
+button,input,a{font:inherit}
+button,input{color:inherit}
 :focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 /* atas */
@@ -42,7 +43,7 @@ button,input{font:inherit;color:inherit}
 nav{grid-area:nav;display:flex;background:var(--card);border-top:1px solid var(--line);
   padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));gap:2px}
 nav button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  min-height:60px;background:none;border:0;border-radius:12px;font-size:.74rem;font-weight:700;color:var(--mut);cursor:pointer;padding:4px 2px}
+  min-height:60px;background:none;border:0;border-radius:12px;font-size:.72rem;font-weight:700;color:var(--mut);cursor:pointer;padding:4px 2px}
 nav button svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 nav button[aria-current="page"]{background:var(--brand);color:#fff}
 
@@ -54,134 +55,122 @@ nav button[aria-current="page"]{background:var(--brand);color:#fff}
 .col{display:contents}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
 .label{font-size:.95rem;color:var(--mut)}
-.num{font-size:2.2rem;font-weight:700;line-height:1.1}
+.num{font-size:2.1rem;font-weight:700;line-height:1.1}
 .word{font-weight:700}
 .s-ok{color:var(--ok)}.s-low{color:var(--low)}.s-crit{color:var(--crit)}.s-hi{color:var(--hi)}
 .card h2{font-size:1.1rem;margin-bottom:6px}
 .sm{font-size:.95rem;color:var(--mut)}
 .linkbtn{background:none;border:0;padding:6px 0;color:var(--brand);font-weight:700;text-decoration:underline;cursor:pointer;font-size:.95rem}
+.banner{background:#FFF7E0;border:1px solid #E8D28A;border-radius:10px;padding:8px 12px;font-size:.92rem;margin-bottom:10px}
 
-/* visual tanah */
-.soilcard{padding:0;overflow:hidden}
-.soilcard svg{display:block;width:100%;height:auto}
-.drop{opacity:0}
-.pon .drop{animation:fall 1.3s linear infinite}
-.pon .drop:nth-child(3){animation-delay:.45s}.pon .drop:nth-child(4){animation-delay:.9s}
-@keyframes fall{0%{opacity:0;transform:translateY(0)}15%{opacity:1}100%{opacity:0;transform:translateY(62px)}}
-.flow{stroke-dasharray:10 8}
-.flowon .flow{animation:dash 0.8s linear infinite}
-@keyframes dash{to{stroke-dashoffset:-18}}
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 16px;font-weight:700;cursor:pointer}
+.chip i{width:14px;height:14px;border-radius:50%;flex:none}
+.chip[aria-pressed="true"]{border-color:var(--brand);background:var(--brand);color:#fff}
+.chip.series[aria-pressed="true"]{background:var(--card);color:var(--ink);border-color:var(--ink)}
+.chip.series[aria-pressed="false"]{opacity:.55}
+.titikbar .chip{min-height:40px;padding:2px 12px;font-size:.95rem}
+.titikbar .chip i{box-shadow:0 0 0 2px rgba(255,255,255,.9),0 0 0 3px rgba(0,0,0,.25)}
+
+/* rentang ideal */
+.rng{position:relative;height:14px;border-radius:7px;background:#E4E8E2;margin:14px 0 6px}
+.rng .ideal{position:absolute;top:0;bottom:0;background:#8CCB8F;border-radius:7px}
+.rng i{position:absolute;top:-6px;width:6px;height:26px;border-radius:3px;background:var(--ink);transform:translateX(-50%)}
+.rrow{display:flex;justify-content:space-between;font-size:.88rem;color:var(--mut)}
+.t2{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 
 /* beranda */
 .home{grid-template-columns:1fr}
 .hero{border-left:8px solid var(--ok);display:grid;gap:4px;order:1}
-.hero[data-s="low"]{border-color:var(--low)}
-.hero[data-s="crit"]{border-color:var(--crit)}
-.hero[data-s="hi"]{border-color:var(--hi)}
+.hero[data-s="low"],.verdict[data-s="low"],.wcard[data-s="low"]{border-left-color:var(--low)}
+.hero[data-s="crit"],.verdict[data-s="crit"],.wcard[data-s="crit"]{border-left-color:var(--crit)}
+.hero[data-s="hi"],.verdict[data-s="hi"],.wcard[data-s="hi"]{border-left-color:var(--hi)}
 .hero h1{font-size:2rem;line-height:1.1}
-.hero p{font-size:1.1rem}
-.home .gaugecard{order:2}
+.hero p{font-size:1.08rem}
+.home .titik{order:2}
+.home .gaugecard{order:3}
 .gaugecard{padding:10px 12px}
 .gaugecard svg{display:block;width:100%;height:auto}
+.gaugecard .label{text-align:center}
 .glegend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:.85rem;color:var(--mut);margin:2px 0 8px}
 .glegend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
 .gsep{border:0;border-top:1px solid var(--line);margin:6px 0 8px}
-.duo{order:3;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.stats6{order:4;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.duo{order:4;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stats6{order:5;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .stats6 .card{padding:10px 12px}
-.stats6 .num{font-size:1.7rem}
-.info{order:5}
-.info ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
-.info li{padding-left:12px;border-left:5px solid var(--ok);font-size:1rem}
-.info li.w{border-color:var(--low)}.info li.b{border-color:var(--crit)}
-.fc{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:#EEF4EE;font-weight:700}
+.stats6 .num{font-size:1.65rem}
+.info{order:6}
+.info ul,.fixes{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.info li,.fixes li{padding-left:12px;border-left:5px solid var(--ok);font-size:1rem}
+li.w{border-left-color:var(--low)!important}li.b{border-left-color:var(--crit)!important}li.i{border-left-color:var(--hi)!important}
+.fc{padding:8px 10px;border-radius:10px;background:#EEF4EE;font-weight:700}
 .health{display:grid;justify-items:center;text-align:center;gap:2px}
 .ring{width:104px;height:104px}
 .ring text{font-family:var(--font);font-weight:700}
 .crop .num{font-size:1.6rem}
 
 /* tanah */
-.depth{display:grid;gap:4px}
-.depth .t2{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.depth .num{font-size:2rem}
-.track{height:14px;background:#E4E8E2;border-radius:7px;overflow:hidden}
-.track b{display:block;height:100%;background:var(--ok);border-radius:7px;transition:width .4s,background .4s}
+.soilcard{padding:0;overflow:hidden}
+.soilcard svg{display:block;width:100%;height:auto}
+.depth{display:grid;gap:2px}
+.depth .num{font-size:1.9rem}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.phbar{position:relative;height:10px;border-radius:5px;margin:10px 0 4px;background:linear-gradient(90deg,#D97706,#6BB34F 45%,#3B82F6)}
-.phbar i{position:absolute;top:-6px;width:5px;height:22px;border-radius:3px;background:var(--ink);transform:translateX(-50%)}
-
-/* tanaman */
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 16px;font-weight:700;cursor:pointer}
-.chip i{width:14px;height:14px;border-radius:50%}
-.chip[aria-pressed="true"]{border-color:var(--brand);background:var(--brand);color:#fff}
-.chip.series[aria-pressed="true"]{background:var(--card);color:var(--ink);border-color:var(--ink)}
-.chip.series[aria-pressed="false"]{opacity:.55}
-.verdict{border-left:8px solid var(--ok)}
-.verdict[data-s="low"]{border-color:var(--low)}.verdict[data-s="crit"]{border-color:var(--crit)}
-.verdict h2{font-size:1.9rem;margin:0}
-.rng{position:relative;height:14px;border-radius:7px;background:#E4E8E2;margin:14px 0 6px}
-.rng .ideal{position:absolute;top:0;bottom:0;background:#8CCB8F;border-radius:7px}
-.rng i{position:absolute;top:-6px;width:6px;height:26px;border-radius:3px;background:var(--ink);transform:translateX(-50%)}
-.rrow{display:flex;justify-content:space-between;font-size:.9rem;color:var(--mut)}
-.param .t2{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-
-/* pompa */
-.mainbtn{width:100%;min-height:72px;border-radius:16px;border:0;background:var(--brand);color:#fff;font-weight:700;font-size:1.5rem;cursor:pointer}
-.mainbtn.stop{background:var(--crit)}
-.mainbtn[disabled]{background:#B9C0B8;cursor:not-allowed}
-.hint{text-align:center;font-size:.95rem;color:var(--mut);min-height:1.4em}
-.seg{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--brand);border-radius:12px;overflow:hidden}
-.seg button{min-height:54px;background:var(--card);border:0;font-weight:700;cursor:pointer;color:var(--brand)}
-.seg button[aria-pressed="true"]{background:var(--brand);color:#fff}
-.seg button[disabled]{opacity:.5;cursor:not-allowed}
-.stepper{display:grid;grid-template-columns:58px 1fr 58px;align-items:center;gap:10px;margin-top:6px}
-.stepper button{height:58px;border-radius:12px;border:2px solid var(--brand);background:var(--card);color:var(--brand);font-size:1.9rem;font-weight:700;cursor:pointer;line-height:1}
-.stepper button[disabled]{opacity:.45;cursor:not-allowed}
-.stepper .num{text-align:center}
-.pstatus{text-align:center}
-.pstatus .num{font-size:2.5rem}
-.pipe svg{display:block;width:100%;height:auto}
-.usage{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
-.usage .num{font-size:1.6rem}
-
-/* riwayat */
-.chartbox{position:relative;min-height:230px;padding:8px}
-.chartbox svg{position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px)}
-.chartbox text{font-family:var(--font);font-size:13px;fill:#4A524A}
+.two .num{font-size:1.8rem}
 table{width:100%;border-collapse:collapse;font-size:.98rem}
 th,td{text-align:right;padding:5px 4px;border-bottom:1px solid var(--line)}
 th:first-child,td:first-child{text-align:left}
-th{font-weight:700;color:var(--mut);font-size:.9rem}
+th{font-weight:700;color:var(--mut);font-size:.88rem}
 tr:last-child td{border-bottom:0}
+tr.sel td:first-child{font-weight:700;text-decoration:underline}
+.tw{overflow-x:auto}
+
+/* budidaya */
+.verdict{border-left:8px solid var(--ok)}
+.verdict h2{font-size:1.8rem;margin:0}
+.need{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:baseline;margin-top:6px}
+.need b{font-weight:700}
+
+/* air */
+.wcard{border-left:8px solid var(--ok)}
+.wcard h2{font-size:1.7rem;margin:0}
+.chartbox{position:relative;min-height:240px;padding:8px}
+.chartbox svg{position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px)}
+.chartbox text{font-family:var(--font);font-size:13px;fill:#4A524A}
+
+/* umkm */
+.item{padding:10px 0;border-bottom:1px solid var(--line);display:grid;gap:4px}
+.item:last-child{border-bottom:0}
+.tag{display:inline-block;font-size:.8rem;font-weight:700;padding:1px 8px;border-radius:999px;background:#E4EEE4;color:var(--brand);margin-right:6px}
+.tag.s{background:#E3ECFB;color:var(--hi)}
 
 /* setelan */
 .f{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-.f input[type=text]{flex:1;min-width:150px;min-height:48px;border:2px solid var(--line);border-radius:10px;padding:8px 12px;background:#fff}
-.btn{min-height:48px;border-radius:10px;border:2px solid var(--brand);background:var(--brand);color:#fff;padding:8px 18px;font-weight:700;cursor:pointer}
+.f input[type=text]{flex:1;min-width:130px;min-height:46px;border:2px solid var(--line);border-radius:10px;padding:6px 12px;background:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;border-radius:10px;border:2px solid var(--brand);background:var(--brand);color:#fff;padding:6px 18px;font-weight:700;cursor:pointer;text-decoration:none}
 .btn.alt{background:var(--card);color:var(--brand)}
+.cfgrow{display:grid;grid-template-columns:90px 1fr 1fr;gap:8px;align-items:center;margin-top:8px}
+.cfgrow input{min-width:0;min-height:44px;border:2px solid var(--line);border-radius:10px;padding:4px 10px;background:#fff;width:100%}
+@media (max-width:560px){.cfgrow{grid-template-columns:1fr 1fr}.cfgrow input:first-child{grid-column:1/-1}}
 
 /* layar lebar */
 @media (min-width:900px){
   body{grid-template-columns:170px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"nav top" "nav views"}
   nav{flex-direction:column;justify-content:flex-start;border-top:0;border-right:1px solid var(--line);padding:16px 10px;gap:6px}
-  nav button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;padding:10px 14px;font-size:1rem;min-height:54px}
+  nav button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;padding:10px 14px;font-size:1rem;min-height:52px}
   .top{padding:12px 26px}
   .view{padding:16px 26px}
   .col{display:grid;gap:12px;align-content:start}
-  .home,.tanah,.pompa{grid-template-columns:1fr 1fr;align-items:start}
-  .soil2{grid-template-columns:1fr 1fr}
-  .setpage{max-width:720px}
-  .riw{height:100%;grid-template-rows:auto minmax(0,1fr) auto auto}
-  .tpage{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}
+  .home,.tanah,.bpage,.air,.umkm{grid-template-columns:1fr 1fr;align-items:start}
+  .bpage{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .full{grid-column:1/-1}
+  .setpage{max-width:760px}
 }
 @media (max-width:899px){
-  .home .col,.tanah .col,.pompa .col{display:contents}
-  .riw .chartbox{height:260px}
+  .home .col,.tanah .col,.air .col{display:contents}
+  .chartbox{height:260px}
 }
-@media (prefers-reduced-motion:reduce){
-  .track b{transition:none}.pon .drop{animation:none;opacity:.9}.flowon .flow{animation:none}
-}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
@@ -203,48 +192,54 @@ tr:last-child td{border-bottom:0}
     <div class="page home">
       <div class="col">
         <div class="card gaugecard">
+          <div class="label">Kelembapan zona akar <span id="gnote"></span></div>
           <div id="gaugeHome"></div>
-          <div class="glegend"><span><i style="background:#E5584B"></i>Kering</span><span><i style="background:#F2A33A"></i>Agak kering</span><span><i style="background:#2FB463"></i>Ideal</span><span><i style="background:#4D8DFF"></i>Terlalu basah</span></div>
+          <div class="glegend"><span><i style="background:#E5584B"></i>Sangat kurang</span><span><i style="background:#F2A33A"></i>Kurang</span><span><i style="background:#2FB463"></i>Sesuai</span><span><i style="background:#4D8DFF"></i>Berlebih</span></div>
           <hr class="gsep">
           <div id="spark"></div>
           <div class="sm" id="sparkcap" style="text-align:center"></div>
         </div>
         <div class="duo">
           <div class="card health">
-            <svg class="ring" viewBox="0 0 110 110" role="img" aria-label="Skor kesehatan tanah">
+            <svg class="ring" viewBox="0 0 110 110" role="img" aria-label="Tingkat kesesuaian tanah">
               <circle cx="55" cy="55" r="44" fill="none" stroke="#E4E8E2" stroke-width="11"/>
               <circle id="ringc" cx="55" cy="55" r="44" fill="none" stroke="#1F7A3A" stroke-width="11" stroke-linecap="round"
                 stroke-dasharray="276.46" stroke-dashoffset="276.46" transform="rotate(-90 55 55)"/>
               <text id="ringt" x="55" y="64" text-anchor="middle" font-size="30" fill="#1B1F1B">--</text>
             </svg>
-            <div class="label">Kesehatan tanah</div>
+            <div class="label">Kesesuaian tanah</div>
             <div class="word" id="ringw"></div>
           </div>
           <div class="card crop">
-            <div class="label">Tanamanmu</div>
-            <div class="num" id="hcrop">Cabai</div>
-            <div class="word" id="hcropv"></div>
-            <button class="linkbtn" data-go="tanaman">Lihat detail</button>
+            <div class="label">Tanaman dan fase</div>
+            <div class="num" id="hcrop">Jagung</div>
+            <div class="word" id="hphase"></div>
+            <button class="linkbtn" data-go="budidaya">Ubah</button>
           </div>
         </div>
       </div>
       <div class="col">
         <div class="card hero" id="hero" data-s="ok">
-          <div class="label">Kondisi tanah sekarang</div>
-          <h1 id="hstat">Tanah cukup air</h1>
+          <div class="label">Kondisi lahan sekarang</div>
+          <h1 id="hstat">--</h1>
           <p id="hadv"></p>
         </div>
+        <div class="titik">
+          <div class="label" style="margin-bottom:6px">Titik pengukuran</div>
+          <div class="chips titikbar"></div>
+        </div>
         <div class="stats6">
-          <div class="card"><div class="label">Kelembapan</div><div class="num" id="hs0">--</div><div class="word" id="hw0"></div></div>
-          <div class="card"><div class="label">Suhu tanah</div><div class="num" id="hs1">--</div><div class="word" id="hw1"></div></div>
-          <div class="card"><div class="label">Keasaman pH</div><div class="num" id="hs2">--</div><div class="word" id="hw2"></div></div>
-          <div class="card"><div class="label">Suhu udara</div><div class="num" id="hs3">--</div><div class="word">&nbsp;</div></div>
-          <div class="card"><div class="label">Lembap udara</div><div class="num" id="hs4">--</div><div class="word">&nbsp;</div></div>
-          <div class="card"><div class="label">Pompa air</div><div class="num" id="hs5">--</div><div class="word" id="hw5"></div></div>
+          <div class="card"><div class="label">Lembap 10 cm</div><div class="num" id="hs0">--</div><div class="word" id="hw0"></div></div>
+          <div class="card"><div class="label">Lembap 30 cm</div><div class="num" id="hs1">--</div><div class="word" id="hw1"></div></div>
+          <div class="card"><div class="label">Lembap 60 cm</div><div class="num" id="hs2">--</div><div class="word" id="hw2"></div></div>
+          <div class="card"><div class="label">Suhu tanah</div><div class="num" id="hs3">--</div><div class="word" id="hw3"></div></div>
+          <div class="card"><div class="label">pH tanah</div><div class="num" id="hs4">--</div><div class="word" id="hw4"></div></div>
+          <div class="card"><div class="label">Pengairan</div><div class="num" id="hs5" style="font-size:1.3rem;padding-top:6px">--</div><div class="word">&nbsp;</div></div>
         </div>
         <div class="card info">
           <div class="fc" id="fc"></div>
           <ul id="alerts"></ul>
+          <button class="linkbtn" data-go="budidaya">Lihat semua rekomendasi</button>
         </div>
       </div>
     </div>
@@ -253,103 +248,93 @@ tr:last-child td{border-bottom:0}
   <!-- TANAH -->
   <section class="view" id="v-tanah" aria-label="Kondisi tanah">
     <div class="page tanah">
+      <div class="full"><div class="chips titikbar"></div></div>
       <div class="col">
         <div class="card soilcard" id="soilTanah"></div>
         <div class="two">
-          <div class="card"><div class="label">Suhu tanah</div><div class="num" id="ts">--</div><div class="sm" id="tair"></div></div>
-          <div class="card"><div class="label">Keasaman (pH)</div><div class="num" id="tph">--</div><div class="phbar"><i id="phm"></i></div><div class="word" id="tphw"></div></div>
+          <div class="card"><div class="t2"><span class="label">Suhu tanah</span><span class="word" id="tsw"></span></div><div class="num" id="ts">--</div>
+            <div class="rng"><div class="ideal" id="ti"></div><i id="tp"></i></div></div>
+          <div class="card"><div class="t2"><span class="label">pH tanah</span><span class="word" id="tphw"></span></div><div class="num" id="tph">--</div>
+            <div class="rng"><div class="ideal" id="tpi"></div><i id="tpp"></i></div></div>
         </div>
       </div>
       <div class="col">
-        <div class="card depth"><div class="t2"><span class="label">Lapisan atas · 10 cm</span><span class="word" id="dw0"></span></div><div class="num" id="dn0">--</div><div class="track"><b id="db0"></b></div><div class="sm">Cepat berubah. Dipengaruhi siraman dan panas matahari.</div></div>
-        <div class="card depth"><div class="t2"><span class="label">Lapisan tengah · 30 cm</span><span class="word" id="dw1"></span></div><div class="num" id="dn1">--</div><div class="track"><b id="db1"></b></div><div class="sm">Tempat sebagian besar akar tanaman mengambil air.</div></div>
-        <div class="card depth"><div class="t2"><span class="label">Lapisan dalam · 60 cm</span><span class="word" id="dw2"></span></div><div class="num" id="dn2">--</div><div class="track"><b id="db2"></b></div><div class="sm">Cadangan air. Berubah pelan dan bertahan lebih lama.</div></div>
+        <div class="card depth"><div class="t2"><span class="label">Lapisan atas · 10 cm</span><span class="word" id="dw0"></span></div><div class="num" id="dn0">--</div><div class="rng"><div class="ideal" id="di0"></div><i id="dp0"></i></div><div class="sm">Cepat berubah karena hujan dan panas.</div></div>
+        <div class="card depth"><div class="t2"><span class="label">Lapisan tengah · 30 cm</span><span class="word" id="dw1"></span></div><div class="num" id="dn1">--</div><div class="rng"><div class="ideal" id="di1"></div><i id="dp1"></i></div><div class="sm">Zona akar utama padi dan jagung.</div></div>
+        <div class="card depth"><div class="t2"><span class="label">Lapisan dalam · 60 cm</span><span class="word" id="dw2"></span></div><div class="num" id="dn2">--</div><div class="rng"><div class="ideal" id="di2"></div><i id="dp2"></i></div><div class="sm">Cadangan air, berubah pelan.</div></div>
+        <div class="card"><h2>Perbandingan titik</h2><div class="tw"><table><thead><tr><th>Titik</th><th>10 cm</th><th>30 cm</th><th>60 cm</th><th>Suhu</th><th>pH</th></tr></thead><tbody id="cmp"></tbody></table></div></div>
       </div>
     </div>
   </section>
 
-  <!-- TANAMAN -->
-  <section class="view" id="v-tanaman" aria-label="Kecocokan tanaman">
+  <!-- BUDIDAYA -->
+  <section class="view" id="v-budidaya" aria-label="Budidaya">
     <div class="page">
-      <div class="chips" id="cropchips"></div>
-      <div class="page tpage" style="padding:0">
+      <div class="chips" id="cropchips" role="group" aria-label="Pilih tanaman"></div>
+      <div class="chips" id="phasechips" role="group" aria-label="Pilih fase pertumbuhan"></div>
+      <div class="page bpage" style="padding:0">
         <div class="col" style="display:grid;gap:12px;align-content:start">
           <div class="card verdict" id="verdict" data-s="ok">
-            <div class="label">Untuk tanaman <span id="vname"></span></div>
+            <div class="label" id="vlabel">--</div>
             <h2 id="vtext">--</h2>
             <p id="vsub" style="margin-top:4px"></p>
           </div>
-          <div class="card"><h2>Tips</h2><p id="ctip"></p><p class="sm" style="margin-top:8px">Panduan umum. Sesuaikan dengan jenis bibit dan kondisi lahanmu.</p></div>
+          <div class="card">
+            <h2>Kebutuhan tanah di fase ini</h2>
+            <div class="need" id="needtbl"></div>
+            <p class="sm" id="phasetip" style="margin-top:8px"></p>
+          </div>
+          <div class="card">
+            <h2>Yang perlu dilakukan</h2>
+            <ul class="fixes" id="fixes"></ul>
+            <p class="sm" style="margin-top:8px">Panduan umum. Sesuaikan dengan varietas, kondisi lahan, dan anjuran penyuluh setempat.</p>
+          </div>
         </div>
         <div class="col" style="display:grid;gap:12px;align-content:start" id="params"></div>
       </div>
     </div>
   </section>
 
-  <!-- POMPA -->
-  <section class="view" id="v-pompa" aria-label="Pompa air">
-    <div class="page pompa">
+  <!-- AIR -->
+  <section class="view" id="v-air" aria-label="Pengairan dan riwayat">
+    <div class="page air">
+      <div class="full"><div class="chips titikbar"></div></div>
       <div class="col">
-        <div class="card pstatus"><div class="label">Pompa air sekarang</div><div class="num" id="pstate">Mati</div></div>
-        <div class="card pipe" id="pipeBox">
-          <svg viewBox="0 0 400 90" role="img" aria-label="Aliran air dari pompa ke lahan">
-            <rect x="8" y="22" width="56" height="46" rx="8" fill="#DDF0F8" stroke="#1B1F1B" stroke-width="2.5"/>
-            <text x="36" y="51" text-anchor="middle" font-size="15" font-weight="700" fill="#1B1F1B" font-family="Atkinson Hyperlegible, Arial, sans-serif">Air</text>
-            <line x1="64" y1="45" x2="330" y2="45" stroke="#B9C0B8" stroke-width="10" stroke-linecap="round"/>
-            <line class="flow" x1="64" y1="45" x2="330" y2="45" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round"/>
-            <rect x="330" y="30" width="62" height="30" rx="8" fill="#8A6A45" stroke="#1B1F1B" stroke-width="2.5"/>
-            <text x="361" y="51" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="Atkinson Hyperlegible, Arial, sans-serif">Lahan</text>
-          </svg>
+        <div class="card wcard" id="wcard" data-s="ok">
+          <div class="label">Kebutuhan pengairan</div>
+          <h2 id="wtitle">--</h2>
+          <p id="wdetail" style="margin-top:4px"></p>
         </div>
-        <button class="mainbtn" id="pbtn">Nyalakan pompa</button>
-        <div class="hint" id="phint"></div>
         <div class="card">
-          <div class="label" style="margin-bottom:8px">Cara kerja pompa</div>
-          <div class="seg" role="group" aria-label="Cara kerja pompa">
-            <button id="mAuto" aria-pressed="true">Otomatis</button>
-            <button id="mMan" aria-pressed="false">Manual</button>
-          </div>
+          <h2>Ringkasan kelembapan</h2>
+          <table><thead><tr><th>Lapisan</th><th>Rata-rata</th><th>Terendah</th><th>Tertinggi</th></tr></thead><tbody id="tbody"></tbody></table>
         </div>
+        <div class="f" style="margin-top:0;align-items:center"><button class="btn alt" id="csv">Unduh data (CSV)</button></div>
       </div>
       <div class="col">
-        <div class="card">
-          <div class="label">Pompa menyala sendiri jika kelembapan tanah di bawah</div>
-          <div class="stepper"><button id="thM" aria-label="Kurangi batas">−</button><div class="num" id="thv">35%</div><button id="thP" aria-label="Tambah batas">+</button></div>
+        <div class="chips">
+          <button class="chip series" data-s="0" aria-pressed="true"><i style="background:var(--s1)"></i>10 cm</button>
+          <button class="chip series" data-s="1" aria-pressed="true"><i style="background:var(--s2)"></i>30 cm</button>
+          <button class="chip series" data-s="2" aria-pressed="true"><i style="background:var(--s3)"></i>60 cm</button>
         </div>
-        <div class="card">
-          <div class="label">Debit air pompa (liter per menit)</div>
-          <div class="stepper"><button id="flM" aria-label="Kurangi debit">−</button><div class="num" id="flv">10</div><button id="flP" aria-label="Tambah debit">+</button></div>
-        </div>
-        <div class="card">
-          <h2 id="usageT">Pemakaian pompa</h2>
-          <div class="usage">
-            <div><div class="num" id="u1">0</div><div class="sm">kali menyala</div></div>
-            <div><div class="num" id="u2">0</div><div class="sm">liter air</div></div>
-            <div><div class="num" id="u3">--</div><div class="sm">siram terakhir</div></div>
-          </div>
-        </div>
+        <div class="card chartbox"><svg id="chart" viewBox="0 0 600 300" role="img" aria-label="Grafik kelembapan tanah per kedalaman"></svg></div>
+        <div class="sm">Area hijau = kebutuhan kelembapan di fase ini. Garis putus-putus = batas bawah.</div>
       </div>
     </div>
   </section>
 
-  <!-- RIWAYAT -->
-  <section class="view" id="v-riwayat" aria-label="Riwayat">
-    <div class="page riw">
-      <div class="chips">
-        <button class="chip series" data-s="0" aria-pressed="true"><i style="background:var(--s1)"></i>10 cm</button>
-        <button class="chip series" data-s="1" aria-pressed="true"><i style="background:var(--s2)"></i>30 cm</button>
-        <button class="chip series" data-s="2" aria-pressed="true"><i style="background:var(--s3)"></i>60 cm</button>
-      </div>
-      <div class="card chartbox"><svg id="chart" viewBox="0 0 600 300" role="img" aria-label="Grafik kelembapan tanah"></svg></div>
+  <!-- UMKM -->
+  <section class="view" id="v-umkm" aria-label="Kebutuhan budidaya dan UMKM">
+    <div class="page umkm">
       <div class="card">
-        <table>
-          <thead><tr><th>Lapisan</th><th>Rata-rata</th><th>Terendah</th><th>Tertinggi</th></tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
+        <h2>Kebutuhan budidaya kamu</h2>
+        <p class="sm" id="needsub"></p>
+        <div id="needs"></div>
       </div>
-      <div class="f" style="margin-top:0;align-items:center">
-        <button class="btn alt" id="csv">Unduh data (CSV)</button>
-        <span class="sm">Area hijau = kisaran ideal. Area biru = pompa menyala.</span>
+      <div class="card">
+        <h2>UMKM penyedia</h2>
+        <div class="banner">Daftar UMKM di bawah masih contoh. Ganti dengan data mitra asli di bagian <b>UMKM_DATA</b> pada kode.</div>
+        <div id="umkmlist"></div>
       </div>
     </div>
   </section>
@@ -357,21 +342,12 @@ tr:last-child td{border-bottom:0}
   <!-- SETELAN -->
   <section class="view" id="v-setelan" aria-label="Setelan">
     <div class="page setpage">
-      <div class="card">
-        <h2>Nama lahan</h2>
-        <div class="f"><input type="text" id="lname" placeholder="Contoh: Kebun Cabai Pak Slamet" aria-label="Nama lahan"></div>
-      </div>
-      <div class="card">
-        <h2>Ukuran huruf</h2>
-        <div class="f"><button class="btn alt" id="fsM" aria-label="Perkecil huruf">A−</button><button class="btn alt" id="fsP" aria-label="Perbesar huruf">A+</button></div>
-      </div>
+      <div class="card"><h2>Nama lahan</h2><div class="f"><input type="text" id="lname" placeholder="Contoh: Lahan Padi Pak Slamet" aria-label="Nama lahan"></div></div>
+      <div class="card"><h2>Ukuran huruf</h2><div class="f"><button class="btn alt" id="fsM" aria-label="Perkecil huruf">A−</button><button class="btn alt" id="fsP" aria-label="Perbesar huruf">A+</button></div></div>
       <div class="card">
         <h2>Sambungkan sensor asli</h2>
-        <p class="sm">Sekarang SoilMate menampilkan data contoh. Jika alat sensormu (misalnya ESP32) mengirim data ke ThingSpeak, isi Channel ID di bawah. Urutan field: 1–3 kelembapan tanah (10/30/60 cm), 4 suhu tanah, 5 pH, 6 suhu udara, 7 kelembapan udara, 8 status pompa (0/1).</p>
-        <div class="f">
-          <input type="text" id="chid" placeholder="Channel ID" inputmode="numeric" aria-label="Channel ID">
-          <input type="text" id="chkey" placeholder="Read API Key (jika privat)" aria-label="Read API Key">
-        </div>
+        <p class="sm">Soil scanner mengirim data lewat ESP32 ke ThingSpeak. Satu channel mewakili satu titik pengukuran (maksimal 4). Urutan field: 1–3 kelembapan tanah 10/30/60 cm, 4 suhu tanah, 5 pH.</p>
+        <div id="cfgrows"></div>
         <div class="f"><button class="btn" id="connect">Sambungkan</button><button class="btn alt" id="demo">Pakai data contoh</button></div>
         <p id="msg" class="sm" style="margin-top:8px"></p>
       </div>
@@ -383,71 +359,281 @@ tr:last-child td{border-bottom:0}
 <nav aria-label="Menu utama">
   <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Beranda</button>
   <button data-go="tanah"><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>Tanah</button>
-  <button data-go="tanaman"><svg viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 14c-5 0-7-3-7-7 5 0 7 3 7 7z"/><path d="M12 11c0-4 2-6 7-6 0 4-2 6-7 6z"/></svg>Tanaman</button>
-  <button data-go="pompa"><svg viewBox="0 0 24 24"><path d="M12 3C8 9 5 12 5 16a7 7 0 0 0 14 0c0-4-3-7-7-13z"/></svg>Pompa</button>
-  <button data-go="riwayat"><svg viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M5 16l4-5 4 3 6-8"/></svg>Riwayat</button>
+  <button data-go="budidaya"><svg viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 14c-5 0-7-3-7-7 5 0 7 3 7 7z"/><path d="M12 11c0-4 2-6 7-6 0 4-2 6-7 6z"/></svg>Budidaya</button>
+  <button data-go="air"><svg viewBox="0 0 24 24"><path d="M12 3C8 9 5 12 5 16a7 7 0 0 0 14 0c0-4-3-7-7-13z"/></svg>Air</button>
+  <button data-go="umkm"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 12H5z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>UMKM</button>
   <button data-go="setelan"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Setelan</button>
 </nav>
 
 <script>
 (function(){
   var $=function(s){return document.querySelector(s)};
-  var N=48, VIEWS=['home','tanah','tanaman','pompa','riwayat','setelan'], FS=[100,115,130];
-  var st={live:false,m:[48,48,56],t:26.4,ph:6.5,at:29,ah:68,pump:false,auto:true,th:35,flow:10,iv:10,
-    hist:[[],[],[]],pumpHist:[],show:[true,true,true],fs:0,crop:'cabai',timer:null,poll:null};
+  var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+  var N=48, MAXP=4, VIEWS=['home','tanah','budidaya','air','umkm','setelan'], FS=[100,115,130];
 
+  /* ================= DATA KEBUTUHAN TANAMAN =================
+     Panduan umum. w = bobot kedalaman (10/30/60 cm) untuk "zona akar".
+     m = kelembapan tanah (%), ph = keasaman, t = suhu tanah (°C). */
   var CROPS={
-    padi:{n:'Padi',m:[70,95],ph:[5.5,7],t:[24,30],d:0,tip:'Padi butuh tanah jenuh air selama masa tumbuh. Jaga genangan tipis, dan keringkan menjelang panen.'},
-    jagung:{n:'Jagung',m:[45,70],ph:[5.8,7],t:[21,30],d:1,tip:'Paling butuh air saat berbunga. Hindari genangan karena akar mudah busuk.'},
-    cabai:{n:'Cabai',m:[50,70],ph:[6,6.8],t:[21,30],d:1,tip:'Cabai tidak tahan genangan. Pakai bedengan agar air mudah mengalir keluar.'},
-    tomat:{n:'Tomat',m:[55,75],ph:[6,6.8],t:[18,27],d:1,tip:'Siram teratur supaya buah tidak pecah. Hindari menyiram daun saat sore.'},
-    sayur:{n:'Sayuran hijau',m:[60,80],ph:[6,7],t:[18,28],d:0,tip:'Kangkung, sawi, dan bayam suka tanah yang selalu lembap. Siram ringan tapi sering.'},
-    bawang:{n:'Bawang merah',m:[40,60],ph:[6,6.8],t:[20,30],d:0,tip:'Tidak suka tanah becek. Kurangi air saat mendekati panen supaya umbi tahan simpan.'},
-    singkong:{n:'Singkong',m:[35,60],ph:[5.5,7],t:[22,32],d:2,tip:'Cukup tahan kering, tetapi tidak tahan genangan. Tanah gembur membuat umbi besar.'}
+    padi:{n:'Padi',w:[.5,.35,.15],phases:[
+      {n:'Persemaian',hst:'0–21 hari',m:[70,95],ph:[5.5,7],t:[24,30],tip:'Jaga persemaian tetap lembap sampai tergenang tipis. Hindari kering.'},
+      {n:'Vegetatif (anakan)',hst:'±21–60 hari',m:[80,100],ph:[5.5,7],t:[24,30],tip:'Jaga genangan sekitar 3–5 cm agar anakan tumbuh banyak dan gulma tertekan.'},
+      {n:'Generatif (bunting–berbunga)',hst:'±60–90 hari',m:[85,100],ph:[5.5,7],t:[24,30],tip:'Fase paling peka kekurangan air. Jangan sampai tanah kering.'},
+      {n:'Pemasakan',hst:'±90–115 hari',m:[50,75],ph:[5.5,7],t:[22,30],tip:'Keringkan lahan bertahap sekitar 7–10 hari sebelum panen.'}
+    ]},
+    jagung:{n:'Jagung',w:[.25,.45,.30],phases:[
+      {n:'Perkecambahan',hst:'0–14 hari',m:[50,70],ph:[5.8,7],t:[18,30],tip:'Tanah harus lembap tetapi tidak becek supaya benih tumbuh seragam.'},
+      {n:'Vegetatif',hst:'±15–45 hari',m:[50,70],ph:[5.8,7],t:[20,30],tip:'Akar mulai menyebar dalam. Pengairan teratur membantu batang tumbuh kuat.'},
+      {n:'Berbunga (keluar rambut)',hst:'±45–65 hari',m:[60,80],ph:[5.8,7],t:[20,30],tip:'Fase paling kritis. Kekurangan air di sini menurunkan hasil dengan tajam.'},
+      {n:'Pengisian biji',hst:'±65–95 hari',m:[55,75],ph:[5.8,7],t:[20,30],tip:'Pertahankan kelembapan agar biji terisi penuh.'},
+      {n:'Pematangan',hst:'±95–110 hari',m:[35,55],ph:[5.8,7],t:[18,30],tip:'Kurangi air supaya biji mengering dan siap dipanen.'}
+    ]}
   };
 
+  /* ================= DATA UMKM (CONTOH, ganti dengan mitra asli) ================= */
+  var CATS={kapur:'Kapur pertanian',organik:'Kompos / pupuk organik',pupuk:'Pupuk sesuai fase',pelindung:'Perlindungan tanaman',mulsa:'Mulsa',irigasi:'Perlengkapan air & drainase'};
+  var UMKM_DATA=[
+    {nama:'Toko Tani Contoh A',kota:'Contoh lokasi',kat:['pupuk','kapur','organik'],wa:''},
+    {nama:'Kios Saprodi Contoh B',kota:'Contoh lokasi',kat:['pelindung','pupuk'],wa:''},
+    {nama:'UMKM Mulsa dan Irigasi Contoh C',kota:'Contoh lokasi',kat:['mulsa','irigasi'],wa:''},
+    {nama:'Kelompok Tani Kompos Contoh D',kota:'Contoh lokasi',kat:['organik','kapur'],wa:''}
+  ];
+
+  var st={live:false,sel:'all',crop:'jagung',phase:1,iv:10,show:[true,true,true],fs:0,updated:new Date(),
+    pts:[],evLeft:0,timer:null,poll:null,sig:{},
+    cfg:[{name:'Titik 1',id:'',key:''},{name:'Titik 2',id:'',key:''},{name:'Titik 3',id:'',key:''},{name:'Titik 4',id:'',key:''}]};
+
   function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
-  function hex(c){return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]}
-  function mix(a,b,f){var x=hex(a),y=hex(b);return 'rgb('+x.map(function(v,i){return Math.round(v+(y[i]-v)*f)}).join(',')+')'}
-  function level(v){
-    if(v<25)return ['Kering','crit'];
-    if(v<40)return ['Agak kering','low'];
-    if(v<=70)return ['Cukup air','ok'];
-    return ['Terlalu basah','hi'];
-  }
-  function phWord(p){if(p<5.5)return ['Asam','low'];if(p>7.5)return ['Basa','low'];return ['Cocok','ok']}
-  function tWord(t){if(t>32)return ['Panas','low'];if(t<18)return ['Dingin','low'];return ['Normal','ok']}
   var COL={ok:'#2FB463',low:'#F2A33A',crit:'#E5584B',hi:'#4D8DFF'};
+  var TXT={ok:'#1F7A3A',low:'#B45309',crit:'#B91C1C',hi:'#1D4ED8'};
   function setWord(el,w){el.textContent=w[0];el.className='word s-'+w[1]}
-  function fmtDur(min){
-    if(min<1)return 'baru saja';
-    if(min<60)return Math.round(min)+' menit lalu';
-    if(min<60*48)return Math.round(min/60)+' jam lalu';
-    return Math.round(min/1440)+' hari lalu';
-  }
+  function pad(n){return n<10?'0'+n:''+n}
+  function hhmm(d){return pad(d.getHours())+':'+pad(d.getMinutes())}
+  function spanText(){var s=(N-1)*st.iv/60;return s>=1?Math.round(s)+' jam':Math.round(s*60)+' menit'}
 
   /* ---------- menu ---------- */
   function go(name,push){
     if(VIEWS.indexOf(name)<0)name='home';
     VIEWS.forEach(function(v){$('#v-'+v).classList.toggle('on',v===name)});
-    document.querySelectorAll('nav button').forEach(function(b){
-      if(b.dataset.go===name)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
-    });
+    $$('nav button').forEach(function(b){if(b.dataset.go===name)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     if(push!==false){try{history.replaceState(null,'','#'+name)}catch(e){}}
-    render();
+    st.sig={};render();
   }
-  document.querySelectorAll('[data-go]').forEach(function(b){b.addEventListener('click',function(){go(b.dataset.go)})});
+  $$('[data-go]').forEach(function(b){b.addEventListener('click',function(){go(b.dataset.go)})});
   window.addEventListener('hashchange',function(){go(location.hash.slice(1),false)});
+  function active(){var el=document.querySelector('.view.on');return el?el.id.slice(2):'home'}
 
-  /* ---------- visual tanah (menu Tanah) ---------- */
+  /* ---------- titik pengukuran ---------- */
+  function cur(){
+    var pts=st.pts;
+    if(st.sel!=='all'&&pts[st.sel])return pts[st.sel];
+    var n=pts.length,o={name:'Rata-rata lahan',m:[0,0,0],t:0,ph:0,hist:[[],[],[]]};
+    pts.forEach(function(p){for(var i=0;i<3;i++)o.m[i]+=p.m[i]/n;o.t+=p.t/n;o.ph+=p.ph/n});
+    var len=Math.min.apply(null,pts.map(function(p){return p.hist[0].length}));
+    for(var i=0;i<3;i++)for(var k=0;k<len;k++){
+      var s=0;pts.forEach(function(p){s+=p.hist[i][p.hist[i].length-len+k]});o.hist[i].push(s/n);
+    }
+    return o;
+  }
+  function rootM(C){var w=CROPS[st.crop].w;return C.m[0]*w[0]+C.m[1]*w[1]+C.m[2]*w[2]}
+  function rootSeries(C){var w=CROPS[st.crop].w,n=C.hist[0].length,r=[];for(var k=0;k<n;k++)r.push(C.hist[0][k]*w[0]+C.hist[1][k]*w[1]+C.hist[2][k]*w[2]);return r}
+  function curPhase(){return CROPS[st.crop].phases[st.phase]}
+  function mStatus(v,rng){
+    if(v<rng[0]-15)return ['Sangat kurang air','crit'];
+    if(v<rng[0])return ['Kurang air','low'];
+    if(v<=rng[1])return ['Sesuai','ok'];
+    return ['Kelebihan air','hi'];
+  }
+
+  function buildTitik(){
+    var h='<button class="chip" data-k="all" aria-pressed="false"><i></i>Rata-rata</button>';
+    st.pts.forEach(function(p,i){h+='<button class="chip" data-k="'+i+'" aria-pressed="false"><i></i>'+p.name+'</button>'});
+    $$('.titikbar').forEach(function(c){c.innerHTML=h});
+    $$('.titikbar .chip').forEach(function(b){b.addEventListener('click',function(){st.sel=b.dataset.k==='all'?'all':+b.dataset.k;st.sig={};render()})});
+  }
+  function updateTitik(){
+    $$('.titikbar .chip').forEach(function(b){
+      var k=b.dataset.k,C=k==='all'?null:st.pts[+k];
+      if(k==='all'){C=cur0()}
+      var s=mStatus(rootM(C),curPhase().m);
+      b.querySelector('i').style.background=COL[s[1]];
+      b.setAttribute('aria-pressed',String(String(st.sel)===k));
+      b.setAttribute('aria-label',(k==='all'?'Rata-rata lahan':st.pts[+k].name)+': '+s[0]);
+    });
+  }
+  function cur0(){var s=st.sel;st.sel='all';var c=cur();st.sel=s;return c}
+
+  /* ---------- analisis kondisi & kesesuaian ----------
+     CATATAN: di prototype ini kesesuaian dihitung dengan aturan kebutuhan tanaman per fase.
+     Untuk memakai model Random Forest, ganti isi analyze() agar memanggil API model
+     (kirim kelembapan 10/30/60, suhu, pH, tanaman, fase) lalu pakai skor dan kelasnya. */
+  function pScore(v,r,tol){var d=v<r[0]?r[0]-v:(v>r[1]?v-r[1]:0);return clamp(100-d/tol*100,0,100)}
+  function analyze(C){
+    var cr=CROPS[st.crop],ph=curPhase(),root=rootM(C);
+    var rows=[
+      {key:'m',label:'Kelembapan zona akar',val:root,rng:ph.m,smin:0,smax:100,unit:'%',dec:0,tol:25},
+      {key:'ph',label:'Keasaman (pH)',val:C.ph,rng:ph.ph,smin:4,smax:9,unit:'',dec:1,tol:1.5},
+      {key:'t',label:'Suhu tanah',val:C.t,rng:ph.t,smin:10,smax:40,unit:'°C',dec:1,tol:8}
+    ];
+    rows.forEach(function(r){
+      r.status=r.val<r.rng[0]?'low':(r.val>r.rng[1]?'high':'ok');
+      r.score=pScore(r.val,r.rng,r.tol);
+    });
+    var m=rows[0],p=rows[1],t=rows[2];
+    if(m.status==='ok'){m.word='Sesuai';m.cls='ok'}
+    else{var ms=mStatus(m.val,ph.m);m.word=ms[0];m.cls=ms[1]}
+    p.word=p.status==='ok'?'Sesuai':(p.status==='low'?'Terlalu asam':'Terlalu basa');p.cls=p.status==='ok'?'ok':'low';
+    t.word=t.status==='ok'?'Sesuai':(t.status==='low'?'Terlalu dingin':'Terlalu panas');t.cls=t.status==='ok'?'ok':'low';
+    var off=rows.filter(function(r){return r.status!=='ok'}).length;
+    var score=Math.round(m.score*.5+p.score*.3+t.score*.2);
+    if(off>0)score=Math.min(score,84);
+    var vd=score>=85?['Sangat sesuai','ok']:score>=65?['Cukup sesuai','ok']:score>=40?['Kurang sesuai','low']:['Tidak sesuai','crit'];
+    if(off>0&&vd[1]==='ok')vd=[vd[0],'low'];
+
+    var fixes=[],needs=[],isPadi=st.crop==='padi',lastPadi=isPadi&&st.phase===3;
+    var spread=0;
+    if(st.pts.length>1){var rs=st.pts.map(function(q){return rootM(q)});spread=Math.max.apply(null,rs)-Math.min.apply(null,rs)}
+    if(m.status==='low'){
+      fixes.push({key:'m',sev:m.cls==='crit'?'b':'w',text:isPadi?'Lahan kurang air untuk fase ini. Alirkan air ke petakan sampai tergenang tipis.':'Tanah kurang air untuk jagung. Lakukan pengairan (alur atau siram), terutama di zona akar.'});
+      needs.push({k:'irigasi',t:'Perlengkapan pengairan (selang, pipa)',why:'Kelembapan zona akar '+Math.round(root)+'% di bawah kebutuhan '+ph.m[0]+'%.',src:'Dari sensor'});
+    }
+    if(m.status==='high'){
+      fixes.push({key:'m',sev:'w',text:lastPadi?'Tanah masih terlalu basah untuk pemasakan. Keringkan lahan bertahap menjelang panen.':'Tanah kelebihan air. Buat atau bersihkan saluran drainase agar akar tidak busuk.'});
+      needs.push({k:'irigasi',t:'Perlengkapan drainase',why:'Kelembapan zona akar '+Math.round(root)+'% di atas kebutuhan '+ph.m[1]+'%.',src:'Dari sensor'});
+    }
+    if(C.m[2]<ph.m[0]-10&&C.m[0]>=ph.m[0]-5&&!isPadi){
+      fixes.push({key:'d',sev:'w',text:'Air belum sampai lapisan dalam (60 cm). Beri air lebih lama dengan debit kecil supaya meresap.'});
+    }
+    if(p.status==='low'){
+      fixes.push({key:'ph',sev:'w',text:'Tanah terlalu asam (pH '+C.ph.toFixed(1)+'). Beri kapur pertanian atau dolomit. Dosis ikuti anjuran penyuluh atau hasil uji tanah.'});
+      needs.push({k:'kapur',t:'Kapur pertanian / dolomit',why:'pH tanah '+C.ph.toFixed(1)+' di bawah kebutuhan '+cr.n.toLowerCase()+' ('+ph.ph[0]+').',src:'Dari sensor'});
+    }
+    if(p.status==='high'){
+      fixes.push({key:'ph',sev:'w',text:'Tanah cenderung basa (pH '+C.ph.toFixed(1)+'). Tambahkan bahan organik seperti kompos atau jerami.'});
+      needs.push({k:'organik',t:'Kompos / pupuk organik',why:'pH tanah '+C.ph.toFixed(1)+' di atas kebutuhan '+cr.n.toLowerCase()+' ('+ph.ph[1]+').',src:'Dari sensor'});
+    }
+    if(t.status==='high'){
+      fixes.push({key:'t',sev:'w',text:isPadi?'Suhu tanah tinggi. Genangan air dangkal membantu menurunkan suhu.':'Suhu tanah tinggi. Pasang mulsa jerami dan siram saat pagi atau sore.'});
+      if(!isPadi)needs.push({k:'mulsa',t:'Mulsa jerami / plastik',why:'Suhu tanah '+C.t.toFixed(1)+'°C di atas '+ph.t[1]+'°C.',src:'Dari sensor'});
+    }
+    if(t.status==='low'){
+      fixes.push({key:'t',sev:'w',text:'Suhu tanah rendah. Pertumbuhan bisa melambat. Perhatikan waktu tanam.'});
+    }
+    if(spread>15){
+      fixes.push({key:'s',sev:'w',text:'Kelembapan antar titik tidak merata (selisih '+Math.round(spread)+'%). Periksa pembagian air di lahan.'});
+    }
+    needs.push({k:'pupuk',t:'Pupuk sesuai fase '+ph.n.toLowerCase(),why:'Kebutuhan hara berubah tiap fase. Tanyakan takaran ke penyuluh.',src:'Sesuai fase'});
+    needs.push({k:'pelindung',t:'Produk perlindungan tanaman',why:'Pantau hama dan penyakit rutin selama fase '+ph.n.toLowerCase()+'.',src:'Sesuai fase'});
+    return {cr:cr,ph:ph,root:root,rows:rows,score:score,verdict:vd,fixes:fixes,needs:needs,off:off};
+  }
+  function fixOf(a,k){return a.fixes.filter(function(f){return f.key===k})[0]}
+
+  function heroOf(a){
+    var r=a.rows,n=a.cr.n.toLowerCase();
+    if(r[0].status==='low')return {t:r[0].cls==='crit'?'Lahan sangat kurang air':'Lahan kurang air',cls:r[0].cls,d:fixOf(a,'m').text};
+    if(r[0].status==='high')return {t:'Tanah kelebihan air',cls:'hi',d:fixOf(a,'m').text};
+    if(r[1].status!=='ok')return {t:'pH tanah perlu diperbaiki',cls:'low',d:fixOf(a,'ph').text};
+    if(r[2].status!=='ok')return {t:'Suhu tanah kurang ideal',cls:'low',d:fixOf(a,'t').text};
+    return {t:'Tanah sesuai untuk '+n,cls:'ok',d:'Fase '+a.ph.n.toLowerCase()+'. Pertahankan kondisi ini.'};
+  }
+
+  function forecast(C,a){
+    var m=a.rows[0],lo=m.rng[0],s=rootSeries(C),n=s.length;
+    if(m.val<lo)return {title:'Perlu pengairan sekarang',cls:m.cls,d:'Kelembapan zona akar '+Math.round(m.val)+'% sudah di bawah kebutuhan '+lo+'%.'};
+    if(m.val>m.rng[1])return {title:'Tahan pengairan',cls:'hi',d:'Tanah sudah melewati kebutuhan. Tunggu sampai kelembapan turun ke kisaran '+m.rng[0]+'–'+m.rng[1]+'%.'};
+    if(n<8)return {title:'Belum perlu pengairan',cls:'ok',d:'Mengumpulkan data untuk perkiraan…'};
+    var k=Math.min(12,n-1),slope=(s[n-1]-s[n-1-k])/k;
+    if(slope>-0.03)return {title:'Belum perlu pengairan',cls:'ok',d:'Kelembapan stabil. Belum perlu pengairan dalam waktu dekat.'};
+    var hrs=(m.val-lo)/(-slope)*st.iv/60,when;
+    if(hrs<1)when='kurang dari 1 jam lagi';else if(hrs<48)when='sekitar '+Math.round(hrs)+' jam lagi';else when='sekitar '+Math.round(hrs/24)+' hari lagi';
+    return {title:'Belum perlu pengairan',cls:'ok',d:'Dengan laju pengeringan sekarang, lahan perlu diairi '+when+'.'};
+  }
+
+  /* ---------- data contoh ---------- */
+  function makeDemo(){
+    var base=[[52,50,58,26.2,6.4],[46,45,55,26.8,6.7],[58,54,60,25.9,6.2],[41,43,52,27.1,6.9]];
+    st.pts=base.map(function(b,i){return {name:'Titik '+(i+1),m:[b[0],b[1],b[2]],t:b[3],ph:b[4],hist:[[],[],[]]}});
+    st.iv=10;st.evLeft=0;
+    for(var q=0;q<70;q++)demoTick();
+  }
+  function demoTick(){
+    var decay=[0.35,0.2,0.08],gain=[5,3,1.5];
+    var low=curPhase().m[0],avg=0;st.pts.forEach(function(p){avg+=rootM(p)/st.pts.length});
+    if(st.evLeft<=0&&(Math.random()<0.012||(avg<low-10&&Math.random()<0.05)))st.evLeft=4;
+    st.pts.forEach(function(p,j){
+      for(var i=0;i<3;i++){
+        var v=p.m[i]-decay[i]*(0.85+j*0.1)+(Math.random()-.5)*.5;
+        if(st.evLeft>0)v+=gain[i]*(0.8+Math.random()*.4);
+        p.m[i]=clamp(v,5,98);
+        p.hist[i].push(p.m[i]);if(p.hist[i].length>N)p.hist[i].shift();
+      }
+      p.t=clamp(p.t+(Math.random()-.5)*.2,20,34);
+      p.ph=clamp(p.ph+(Math.random()-.5)*.03,5,8);
+    });
+    if(st.evLeft>0)st.evLeft--;
+    st.updated=new Date();
+  }
+
+  /* ---------- gambar: alat ukur ---------- */
+  var GCX=180,GCY=160,GR=130;
+  function gpt(v,rad){var a=Math.PI*(1-clamp(v,0,100)/100);return [GCX+rad*Math.cos(a),GCY-rad*Math.sin(a)]}
+  function arcD(v1,v2){
+    if(v2-v1<0.5)return '';
+    var a=gpt(v1,GR),b=gpt(v2,GR);
+    return 'M'+a[0].toFixed(1)+' '+a[1].toFixed(1)+'A'+GR+' '+GR+' 0 0 1 '+b[0].toFixed(1)+' '+b[1].toFixed(1);
+  }
+  function gaugeSVG(){
+    var cols=['#E5584B','#F2A33A','#2FB463','#4D8DFF'],F='font-family="Atkinson Hyperlegible, Arial, sans-serif"';
+    var s='<svg viewBox="0 0 360 232" role="img" aria-label="Alat ukur kelembapan zona akar">';
+    cols.forEach(function(c,i){s+='<path id="gz'+i+'" fill="none" stroke="'+c+'" stroke-width="26"/>'});
+    for(var i=0;i<3;i++)s+='<line id="gs'+i+'" stroke="#fff" stroke-width="3"/>';
+    s+='<g '+F+' font-weight="700" fill="#4A524A" font-size="14"><text x="'+(GCX-GR)+'" y="184" text-anchor="middle">0%</text><text x="'+(GCX+GR)+'" y="184" text-anchor="middle">100%</text></g>';
+    s+='<line id="gneedle" x1="'+GCX+'" y1="'+GCY+'" stroke="#1B1F1B" stroke-width="7" stroke-linecap="round"/>';
+    s+='<circle cx="'+GCX+'" cy="'+GCY+'" r="11" fill="#1B1F1B"/>';
+    s+='<text id="gnum" x="'+GCX+'" y="206" text-anchor="middle" font-size="40" font-weight="700" fill="#1B1F1B" '+F+'>--</text>';
+    s+='<text id="gword" x="'+GCX+'" y="227" text-anchor="middle" font-size="17" font-weight="700" '+F+'>&#160;</text>';
+    return s+'</svg>';
+  }
+  function updateGauge(v,rng){
+    var lo=rng[0],hi=rng[1],b=[0,Math.max(0,lo-15),lo,hi,100],ms=mStatus(v,rng);
+    for(var z=0;z<4;z++)$('#gz'+z).setAttribute('d',arcD(b[z],b[z+1]));
+    for(var k=0;k<3;k++){
+      var e=$('#gs'+k),bv=b[k+1];
+      if(bv<=0.5||bv>=99.5){e.setAttribute('visibility','hidden');continue}
+      e.setAttribute('visibility','visible');
+      var p1=gpt(bv,GR-13),p2=gpt(bv,GR+13);
+      e.setAttribute('x1',p1[0].toFixed(1));e.setAttribute('y1',p1[1].toFixed(1));e.setAttribute('x2',p2[0].toFixed(1));e.setAttribute('y2',p2[1].toFixed(1));
+    }
+    var n=gpt(v,GR-34);
+    $('#gneedle').setAttribute('x2',n[0].toFixed(1));$('#gneedle').setAttribute('y2',n[1].toFixed(1));
+    $('#gnum').textContent=Math.round(v)+'%';
+    $('#gword').textContent=ms[0];$('#gword').setAttribute('fill',TXT[ms[1]]);
+  }
+  function sparkSVG(C,rng){
+    var W=360,H=90,pl=4,pr=4,pt=6,pb=6,iw=W-pl-pr,ih=H-pt-pb;
+    function y(v){return pt+ih-(v/100)*ih}
+    function xp(k,n){return pl+(k+(N-n))/(N-1)*iw}
+    var h=rootSeries(C),n=h.length;
+    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Grafik kecil kelembapan zona akar">';
+    s+='<rect x="'+pl+'" y="'+y(rng[1])+'" width="'+iw+'" height="'+Math.max(1,y(rng[0])-y(rng[1]))+'" fill="#1F7A3A" opacity=".14"/>';
+    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(rng[0])+'" y2="'+y(rng[0])+'" stroke="#1B1F1B" stroke-width="1.5" stroke-dasharray="5 4"/>';
+    if(n>1){
+      s+='<polyline points="'+h.map(function(v,k){return xp(k,n).toFixed(1)+','+y(v).toFixed(1)}).join(' ')+'" fill="none" stroke="#1D4ED8" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>';
+      s+='<circle cx="'+xp(n-1,n).toFixed(1)+'" cy="'+y(h[n-1]).toFixed(1)+'" r="5" fill="#1D4ED8"/>';
+    }
+    return s+'</svg>';
+  }
+
+  /* ---------- gambar: penampang tanah ---------- */
   var rnd=7;function rand(){rnd=(rnd*9301+49297)%233280;return rnd/233280}
+  function mix(a,b,f){
+    function hx(c){return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]}
+    var x=hx(a),y=hx(b);return 'rgb('+x.map(function(v,i){return Math.round(v+(y[i]-v)*f)}).join(',')+')';
+  }
   function soilSVG(p){
-    var tops=[56,138,220],hs=[82,82,80],cy=[97,179,260],s='';
-    s+='<svg viewBox="0 0 360 300" role="img" aria-label="Penampang tanah: tiga lapisan dengan sensor kelembapan">';
+    var tops=[56,138,220],hs=[82,82,80],cy=[97,179,260],s='',F='font-family="Atkinson Hyperlegible, Arial, sans-serif"';
+    s+='<svg viewBox="0 0 360 300" role="img" aria-label="Penampang tanah dengan tiga sensor kelembapan">';
     s+='<rect width="360" height="58" fill="#DDF0F8"/><circle cx="44" cy="26" r="14" fill="#F6C945"/>';
-    s+='<g id="'+p+'pipe"><rect x="96" y="38" width="110" height="7" rx="3.5" fill="#6B746B"/>';
-    [112,150,188].forEach(function(x){s+='<path class="drop" d="M'+x+' 50c-4 7-4 11 0 11s4-4 0-11Z" fill="#4D8DFF"/>'});
-    s+='</g>';
     s+='<g id="'+p+'plant"><path d="M300 58V20" stroke="#3C8C3A" stroke-width="4" stroke-linecap="round"/>';
     s+='<path d="M300 44c-14 0-22-6-24-18 14 0 22 6 24 18Z" fill="#4CAF50"/><path d="M300 34c14 0 22-6 24-18-14 0-22 6-24 18Z" fill="#4CAF50"/></g>';
     s+='<rect x="0" y="54" width="360" height="6" fill="#4C8C3F"/>';
@@ -455,376 +641,263 @@ tr:last-child td{border-bottom:0}
     s+='<g stroke="#fff" stroke-width="1.5" stroke-dasharray="6 6" opacity=".6"><line x1="0" y1="138" x2="360" y2="138"/><line x1="0" y1="220" x2="360" y2="220"/></g>';
     for(i=0;i<3;i++){
       s+='<g id="'+p+'D'+i+'">';
-      for(var k=0;k<28;k++){
-        s+='<circle cx="'+(48+rand()*300).toFixed(0)+'" cy="'+(tops[i]+10+rand()*(hs[i]-20)).toFixed(0)+'" r="3" fill="#8FD3F4" opacity="0"/>';
-      }
+      for(var k=0;k<28;k++)s+='<circle cx="'+(48+rand()*300).toFixed(0)+'" cy="'+(tops[i]+10+rand()*(hs[i]-20)).toFixed(0)+'" r="3" fill="#8FD3F4" opacity="0"/>';
       s+='</g>';
     }
-    s+='<g stroke="#EAD9B9" stroke-width="2" fill="none" stroke-linecap="round" opacity=".75">';
-    s+='<path d="M300 60C296 82 286 98 280 126"/><path d="M300 60C304 86 312 102 316 134"/><path d="M300 60C300 92 296 132 290 172"/><path d="M296 92C282 98 272 104 264 114"/><path d="M302 100C314 104 324 112 330 122"/></g>';
+    s+='<g stroke="#EAD9B9" stroke-width="2" fill="none" stroke-linecap="round" opacity=".75"><path d="M300 60C296 82 286 98 280 126"/><path d="M300 60C304 86 312 102 316 134"/><path d="M300 60C300 92 296 132 290 172"/><path d="M296 92C282 98 272 104 264 114"/><path d="M302 100C314 104 324 112 330 122"/></g>';
     s+='<rect x="32" y="60" width="6" height="224" fill="#fff" opacity=".9"/>';
     for(i=0;i<3;i++){
-      s+='<circle id="'+p+'n'+i+'" cx="35" cy="'+cy[i]+'" r="9" fill="#fff" stroke="#1B1F1B" stroke-width="2.5"/>';
+      s+='<circle cx="35" cy="'+cy[i]+'" r="9" fill="#fff" stroke="#1B1F1B" stroke-width="2.5"/>';
       s+='<rect x="56" y="'+(cy[i]-16)+'" width="150" height="32" rx="9" fill="#1B1F1B" opacity=".86"/>';
       s+='<circle id="'+p+'c'+i+'" cx="73" cy="'+cy[i]+'" r="6" fill="#2FB463"/>';
-      s+='<text id="'+p+'t'+i+'" x="88" y="'+(cy[i]+6)+'" font-size="17" font-weight="700" fill="#fff" font-family="Atkinson Hyperlegible, Arial, sans-serif">--</text>';
+      s+='<text id="'+p+'t'+i+'" x="88" y="'+(cy[i]+6)+'" font-size="17" font-weight="700" fill="#fff" '+F+'>--</text>';
     }
-    s+='</svg>';
-    return s;
+    return s+'</svg>';
   }
   var DEP=['10 cm','30 cm','60 cm'];
-  function updateSoil(p,droop){
+  function updateSoil(p,C,rng,droop){
     for(var i=0;i<3;i++){
-      var v=st.m[i],l=level(v);
+      var v=C.m[i],s=mStatus(v,rng);
       $('#'+p+'L'+i).setAttribute('fill',mix('#C9A06A','#4A2F1F',clamp(v/90,0,1)));
       $('#'+p+'t'+i).textContent=DEP[i]+' · '+Math.round(v)+'%';
-      $('#'+p+'c'+i).setAttribute('fill',COL[l[1]]);
+      $('#'+p+'c'+i).setAttribute('fill',COL[s[1]]);
       var dots=$('#'+p+'D'+i).children,show=Math.round(v/100*dots.length);
       for(var k=0;k<dots.length;k++)dots[k].setAttribute('opacity',k<show?'0.85':'0');
     }
-    $('#'+p+'pipe').setAttribute('class',st.pump?'pon':'');
     $('#'+p+'plant').setAttribute('transform','rotate('+droop+' 300 58)');
   }
-  $('#soilTanah').innerHTML=soilSVG('x');
 
-  /* ---------- alat ukur kelembapan (Beranda) ---------- */
-  var GCX=180,GCY=160,GR=130;
-  function gpt(v,rad){var a=Math.PI*(1-clamp(v,0,100)/100);return [GCX+rad*Math.cos(a),GCY-rad*Math.sin(a)]}
-  function gaugeSVG(){
-    var s='<svg viewBox="0 0 360 232" role="img" aria-label="Alat ukur kelembapan tanah lapisan atas">';
-    [[0,25,'#E5584B'],[25,40,'#F2A33A'],[40,70,'#2FB463'],[70,100,'#4D8DFF']].forEach(function(z){
-      var a=gpt(z[0],GR),b=gpt(z[1],GR);
-      s+='<path d="M'+a[0].toFixed(1)+' '+a[1].toFixed(1)+'A'+GR+' '+GR+' 0 0 1 '+b[0].toFixed(1)+' '+b[1].toFixed(1)+'" fill="none" stroke="'+z[2]+'" stroke-width="26"/>';
-    });
-    [25,40,70].forEach(function(v){var a=gpt(v,GR-13),b=gpt(v,GR+13);s+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+'" y2="'+b[1].toFixed(1)+'" stroke="#fff" stroke-width="3"/>'});
-    s+='<g font-family="Atkinson Hyperlegible, Arial, sans-serif" font-weight="700" fill="#4A524A" font-size="14">';
-    s+='<text x="'+(GCX-GR)+'" y="184" text-anchor="middle">0%</text><text x="'+(GCX+GR)+'" y="184" text-anchor="middle">100%</text></g>';
-    s+='<line id="gth" stroke="#1B1F1B" stroke-width="4" stroke-linecap="round"/>';
-    s+='<text id="gthT" text-anchor="middle" font-size="13" font-weight="700" fill="#1B1F1B" font-family="Atkinson Hyperlegible, Arial, sans-serif">pompa</text>';
-    s+='<line id="gneedle" x1="'+GCX+'" y1="'+GCY+'" stroke="#1B1F1B" stroke-width="7" stroke-linecap="round"/>';
-    s+='<circle cx="'+GCX+'" cy="'+GCY+'" r="11" fill="#1B1F1B"/>';
-    s+='<text id="gnum" x="'+GCX+'" y="206" text-anchor="middle" font-size="40" font-weight="700" fill="#1B1F1B" font-family="Atkinson Hyperlegible, Arial, sans-serif">--</text>';
-    s+='<text id="gword" x="'+GCX+'" y="227" text-anchor="middle" font-size="17" font-weight="700" font-family="Atkinson Hyperlegible, Arial, sans-serif">&#160;</text>';
-    return s+'</svg>';
-  }
-  var TXT={ok:'#1F7A3A',low:'#B45309',crit:'#B91C1C',hi:'#1D4ED8'};
-  function updateGauge(){
-    var v=st.m[0],l=level(v),n=gpt(v,GR-34),t1=gpt(st.th,GR-16),t2=gpt(st.th,GR+16),tt=gpt(st.th,GR+30);
-    $('#gneedle').setAttribute('x2',n[0].toFixed(1));$('#gneedle').setAttribute('y2',n[1].toFixed(1));
-    $('#gth').setAttribute('x1',t1[0].toFixed(1));$('#gth').setAttribute('y1',t1[1].toFixed(1));
-    $('#gth').setAttribute('x2',t2[0].toFixed(1));$('#gth').setAttribute('y2',t2[1].toFixed(1));
-    $('#gthT').setAttribute('x',Math.max(24,Math.min(336,tt[0])).toFixed(1));$('#gthT').setAttribute('y',(tt[1]+4).toFixed(1));
-    $('#gnum').textContent=Math.round(v)+'%';
-    $('#gword').textContent=l[0];$('#gword').setAttribute('fill',TXT[l[1]]);
-  }
-  $('#gaugeHome').innerHTML=gaugeSVG();
-  function sparkSVG(){
-    var W=360,H=90,pl=4,pr=4,pt=6,pb=6,iw=W-pl-pr,ih=H-pt-pb;
-    function y(v){return pt+ih-(v/100)*ih}
-    var h=st.hist[0],n=h.length,bw=iw/(N-1);
-    function xp(k,n){return pl+(k+(N-n))/(N-1)*iw}
-    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Grafik kecil kelembapan lapisan atas beberapa jam terakhir">';
-    s+='<rect x="'+pl+'" y="'+y(70)+'" width="'+iw+'" height="'+(y(40)-y(70))+'" fill="#1F7A3A" opacity=".12"/>';
-    for(var k=0;k<st.pumpHist.length;k++){if(st.pumpHist[k])s+='<rect x="'+(xp(k,st.pumpHist.length)-bw/2).toFixed(1)+'" y="'+pt+'" width="'+bw.toFixed(1)+'" height="'+ih+'" fill="#1D4ED8" opacity=".15"/>'}
-    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(st.th)+'" y2="'+y(st.th)+'" stroke="#1B1F1B" stroke-width="1.5" stroke-dasharray="5 4"/>';
-    if(n>1){
-      var pts=h.map(function(v,k){return xp(k,n).toFixed(1)+','+y(v).toFixed(1)}).join(' ');
-      s+='<polyline points="'+pts+'" fill="none" stroke="#1D4ED8" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>';
-      s+='<circle cx="'+xp(n-1,n).toFixed(1)+'" cy="'+y(h[n-1]).toFixed(1)+'" r="5" fill="#1D4ED8"/>';
-    }
-    return s+'</svg>';
+  function setRng(ideal,pin,val,rng,smin,smax){
+    var sp=smax-smin;
+    $(ideal).style.left=((rng[0]-smin)/sp*100)+'%';
+    $(ideal).style.width=((rng[1]-rng[0])/sp*100)+'%';
+    $(pin).style.left=clamp((val-smin)/sp*100,0,100)+'%';
   }
 
-  /* ---------- skor & perkiraan ---------- */
-  function scoreMoist(v){if(v>=40&&v<=70)return 100;if(v<40)return clamp(v/40*100,0,100);return clamp((100-v)/30*100,0,100)}
-  function health(){
-    var m=scoreMoist(st.m[0])*.5+scoreMoist(st.m[1])*.3+scoreMoist(st.m[2])*.2;
-    var dp=st.ph<6?6-st.ph:(st.ph>7?st.ph-7:0);
-    var phs=clamp(100-dp*40,0,100);
-    var dt=st.t<20?20-st.t:(st.t>30?st.t-30:0);
-    var ts=clamp(100-dt*10,0,100);
-    var sc=Math.round(m*.6+phs*.25+ts*.15);
-    var w=sc>=80?['Sangat baik','ok']:sc>=60?['Baik','ok']:sc>=40?['Perlu perhatian','low']:['Buruk','crit'];
-    return {sc:sc,w:w};
-  }
-  function forecast(){
-    var h=st.hist[0],n=h.length;
-    if(st.pump)return 'Pompa sedang menyiram. Kelembapan akan naik.';
-    if(n<8)return 'Mengumpulkan data untuk perkiraan…';
-    var k=Math.min(12,n-1),slope=(h[n-1]-h[n-1-k])/k;
-    var left=st.m[0]-st.th;
-    if(left<=0)return 'Kelembapan sudah di bawah batas siram.';
-    if(slope>-0.03)return 'Kelembapan stabil. Belum perlu menyiram dalam waktu dekat.';
-    var hrs=left/(-slope)*st.iv/60;
-    if(hrs<1)return 'Perkiraan perlu disiram: kurang dari 1 jam lagi.';
-    if(hrs<48)return 'Perkiraan perlu disiram: sekitar '+Math.round(hrs)+' jam lagi.';
-    return 'Perkiraan perlu disiram: sekitar '+Math.round(hrs/24)+' hari lagi.';
-  }
-
-  /* ---------- kecocokan tanaman ---------- */
-  function evalCrop(key){
-    var c=CROPS[key],mv=st.m[c.d],rows=[];
-    function add(label,val,rng,smin,smax,unit,lowMsg,highMsg,dec){
-      var status=val<rng[0]?'low':(val>rng[1]?'high':'ok');
-      rows.push({label:label,val:val,rng:rng,smin:smin,smax:smax,unit:unit,status:status,msg:status==='low'?lowMsg:(status==='high'?highMsg:'Dalam kisaran ideal.'),dec:dec});
-    }
-    add('Kelembapan tanah ('+DEP[c.d]+')',mv,c.m,0,100,'%','Terlalu kering untuk '+c.n.toLowerCase()+'. Perlu menyiram.','Terlalu basah. Kurangi air dan cek saluran pembuangan.',0);
-    add('Keasaman (pH)',st.ph,c.ph,4,9,'','Tanah terlalu asam. Pertimbangkan kapur dolomit.','Tanah terlalu basa. Tambahkan kompos atau bahan organik.',1);
-    add('Suhu tanah',st.t,c.t,10,40,'°C','Tanah agak dingin untuk pertumbuhan optimal.','Tanah terlalu panas. Pakai mulsa atau siram saat sore.',1);
-    var off=rows.filter(function(r){return r.status!=='ok'}).length;
-    var v=off===0?['Cocok ditanami '+c.n.toLowerCase(),'ok','Semua kondisi tanah sesuai kebutuhan tanaman.']
-        :off===1?['Hampir cocok','low','Satu hal perlu diperbaiki, lihat di sebelah.']
-        :['Kurang cocok','crit','Beberapa kondisi belum sesuai. Lihat saran di sebelah.'];
-    return {rows:rows,verdict:v,c:c};
-  }
-
-  /* ---------- data contoh ---------- */
-  function setPump(v){st.pump=v}
-  function demoTick(){
-    var decay=[0.35,0.2,0.08],gain=[1.4,0.7,0.3];
-    for(var i=0;i<3;i++){
-      var v=st.m[i]-decay[i]+(Math.random()-.5)*0.5;
-      if(st.pump)v+=gain[i];
-      st.m[i]=clamp(v,5,95);
-    }
-    if(st.auto){
-      if(st.m[0]<st.th)setPump(true);
-      else if(st.m[0]>st.th+25)setPump(false);
-    }
-    st.t=clamp(st.t+(Math.random()-.5)*.2,20,34);
-    st.ph=clamp(st.ph+(Math.random()-.5)*.03,5,8);
-    st.at=clamp(st.at+(Math.random()-.5)*.3,22,36);
-    st.ah=clamp(st.ah+(Math.random()-.5)*.8,40,95);
-    for(var j=0;j<3;j++){st.hist[j].push(st.m[j]);if(st.hist[j].length>N)st.hist[j].shift()}
-    st.pumpHist.push(st.pump);if(st.pumpHist.length>N)st.pumpHist.shift();
-  }
-  for(var q=0;q<70;q++)demoTick();
-
-  /* ---------- tampilan ---------- */
-  var ADV={
-    crit:['Tanah kering','Segera siram tanaman.'],
-    low:['Tanah agak kering','Sebaiknya mulai menyiram.'],
-    ok:['Tanah cukup air','Tidak perlu menyiram sekarang.'],
-    hi:['Tanah terlalu basah','Jangan menyiram dulu. Pastikan air bisa mengalir keluar.']
-  };
-  function active(){var el=document.querySelector('.view.on');return el?el.id.slice(2):'home'}
-
+  /* ---------- render ---------- */
   function renderHome(){
-    var l0=level(st.m[0]);
-    $('#hero').setAttribute('data-s',l0[1]);
-    $('#hstat').textContent=ADV[l0[1]][0];$('#hstat').className='s-'+l0[1];
-    $('#hadv').textContent=ADV[l0[1]][1];
-    $('#hs0').textContent=Math.round(st.m[0])+'%';setWord($('#hw0'),l0);
-    $('#hs1').textContent=st.t.toFixed(1)+'°';setWord($('#hw1'),tWord(st.t));
-    $('#hs2').textContent=st.ph.toFixed(1);setWord($('#hw2'),phWord(st.ph));
-    $('#hs3').textContent=st.at.toFixed(1)+'°';
-    $('#hs4').textContent=Math.round(st.ah)+'%';
-    $('#hs5').textContent=st.pump?'Hidup':'Mati';$('#hs5').className='num '+(st.pump?'s-hi':'');
-    $('#hw5').textContent=st.auto?'Otomatis':'Manual';
-    var hh=health(),off=276.46*(1-hh.sc/100);
-    $('#ringc').setAttribute('stroke-dashoffset',off.toFixed(1));
-    $('#ringc').setAttribute('stroke',COL[hh.w[1]]);
-    $('#ringt').textContent=hh.sc;
-    setWord($('#ringw'),hh.w);
-    var ev=evalCrop(st.crop);
-    $('#hcrop').textContent=CROPS[st.crop].n;
-    setWord($('#hcropv'),[ev.verdict[0],ev.verdict[1]]);
-    updateGauge();
-    $('#spark').innerHTML=sparkSVG();
-    var spanH=(N-1)*st.iv/60;
-    $('#sparkcap').textContent='Lapisan atas (10 cm), '+(spanH>=1?Math.round(spanH)+' jam':Math.round(spanH*60)+' menit')+' terakhir. Hijau = ideal, biru = pompa menyala, garis putus-putus = batas pompa.';
-    $('#fc').textContent=forecast();
-    renderAlerts();
+    var C=cur(),a=analyze(C),ph=a.ph,h=heroOf(a),f=forecast(C,a);
+    $('#hero').setAttribute('data-s',h.cls);
+    $('#hstat').textContent=h.t;$('#hstat').className='s-'+h.cls;
+    $('#hadv').textContent=h.d;
+    for(var i=0;i<3;i++){$('#hs'+i).textContent=Math.round(C.m[i])+'%';setWord($('#hw'+i),mStatus(C.m[i],ph.m))}
+    $('#hs3').textContent=C.t.toFixed(1)+'°';setWord($('#hw3'),[a.rows[2].word,a.rows[2].cls]);
+    $('#hs4').textContent=C.ph.toFixed(1);setWord($('#hw4'),[a.rows[1].word,a.rows[1].cls]);
+    $('#hs5').textContent=f.title.replace('Belum perlu pengairan','Belum perlu').replace('Perlu pengairan sekarang','Perlu air').replace('Tahan pengairan','Tahan air');
+    $('#hs5').className='num s-'+f.cls;
+    $('#ringc').setAttribute('stroke-dashoffset',(276.46*(1-a.score/100)).toFixed(1));
+    $('#ringc').setAttribute('stroke',COL[a.verdict[1]]);
+    $('#ringt').textContent=a.score;
+    setWord($('#ringw'),a.verdict);
+    $('#hcrop').textContent=a.cr.n;$('#hphase').textContent='Fase '+ph.n.toLowerCase();
+    $('#gnote').textContent='· '+a.cr.n+', butuh '+ph.m[0]+'–'+ph.m[1]+'%';
+    updateGauge(a.root,ph.m);
+    $('#spark').innerHTML=sparkSVG(C,ph.m);
+    $('#sparkcap').textContent=C.name+', '+spanText()+' terakhir. Area hijau = kebutuhan fase ini.';
+    $('#fc').textContent=f.title+'. '+f.d;
+    var fx=a.fixes.slice(0,3);
+    $('#alerts').innerHTML=(fx.length?fx:[{sev:'',text:'Semua kondisi tanah sudah sesuai kebutuhan fase ini.'}]).map(function(x){return '<li class="'+x.sev+'">'+x.text+'</li>'}).join('');
   }
   function renderTanah(){
-    var l0=level(st.m[0]);
-    updateSoil('x',l0[1]==='crit'?30:(l0[1]==='low'?12:(l0[1]==='hi'?-12:0)));
+    var C=cur(),a=analyze(C),ph=a.ph,rg=a.rows;
+    var ms=mStatus(C.m[0],ph.m)[1];
+    updateSoil('x',C,ph.m,ms==='crit'?30:(ms==='low'?12:(ms==='hi'?-12:0)));
     for(var i=0;i<3;i++){
-      var v=st.m[i],l=level(v);
-      $('#dn'+i).textContent=Math.round(v)+'%';setWord($('#dw'+i),l);
-      $('#db'+i).style.width=clamp(v,2,100)+'%';$('#db'+i).style.background=COL[l[1]];
+      $('#dn'+i).textContent=Math.round(C.m[i])+'%';setWord($('#dw'+i),mStatus(C.m[i],ph.m));
+      setRng('#di'+i,'#dp'+i,C.m[i],ph.m,0,100);
     }
-    $('#ts').textContent=st.t.toFixed(1)+'°C';
-    $('#tair').textContent='Udara '+st.at.toFixed(1)+'°C, lembap '+Math.round(st.ah)+'%';
-    $('#tph').textContent=st.ph.toFixed(1);
-    $('#phm').style.left=clamp((st.ph-4)/5*100,0,100)+'%';
-    setWord($('#tphw'),phWord(st.ph));
-  }
-  function renderTanaman(){
-    var ev=evalCrop(st.crop);
-    document.querySelectorAll('#cropchips .chip').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.k===st.crop))});
-    $('#vname').textContent=ev.c.n;
-    $('#verdict').setAttribute('data-s',ev.verdict[1]);
-    $('#vtext').textContent=ev.verdict[0];$('#vtext').className='s-'+ev.verdict[1];
-    $('#vsub').textContent=ev.verdict[2];
-    $('#ctip').textContent=ev.c.tip;
+    $('#ts').textContent=C.t.toFixed(1)+'°C';setWord($('#tsw'),[rg[2].word,rg[2].cls]);setRng('#ti','#tp',C.t,ph.t,10,40);
+    $('#tph').textContent=C.ph.toFixed(1);setWord($('#tphw'),[rg[1].word,rg[1].cls]);setRng('#tpi','#tpp',C.ph,ph.ph,4,9);
     var h='';
-    ev.rows.forEach(function(r){
-      var span=r.smax-r.smin,a=(r.rng[0]-r.smin)/span*100,b=(r.rng[1]-r.smin)/span*100,p=clamp((r.val-r.smin)/span*100,0,100);
-      var cls=r.status==='ok'?'ok':'low',word=r.status==='ok'?'Sesuai':(r.status==='low'?'Kurang':'Berlebih');
-      h+='<div class="card param"><div class="t2"><span class="label">'+r.label+'</span><span class="word s-'+cls+'">'+word+'</span></div>'+
+    st.pts.forEach(function(p,i){
+      function cell(v,r){var ok=v>=r[0]&&v<=r[1];return '<td class="'+(ok?'s-ok':'s-low')+'" style="font-weight:700">'+(r===ph.ph?v.toFixed(1):Math.round(v)+(r===ph.t?'°':'%'))+'</td>'}
+      h+='<tr class="'+(st.sel===i?'sel':'')+'"><td>'+p.name+'</td>'+cell(p.m[0],ph.m)+cell(p.m[1],ph.m)+cell(p.m[2],ph.m)+cell(p.t,ph.t)+cell(p.ph,ph.ph)+'</tr>';
+    });
+    $('#cmp').innerHTML=h;
+  }
+  function buildCrops(){
+    var h='';Object.keys(CROPS).forEach(function(k){h+='<button class="chip" data-k="'+k+'" aria-pressed="false">'+CROPS[k].n+'</button>'});
+    $('#cropchips').innerHTML=h;
+    $$('#cropchips .chip').forEach(function(b){b.addEventListener('click',function(){
+      st.crop=b.dataset.k;st.phase=0;save('soilmate-crop',st.crop);save('soilmate-phase','0');buildPhases();st.sig={};render();
+    })});
+    buildPhases();
+  }
+  function buildPhases(){
+    var h='';CROPS[st.crop].phases.forEach(function(p,i){h+='<button class="chip" data-p="'+i+'" aria-pressed="false">'+p.n+'</button>'});
+    $('#phasechips').innerHTML=h;
+    $$('#phasechips .chip').forEach(function(b){b.addEventListener('click',function(){
+      st.phase=+b.dataset.p;save('soilmate-phase',String(st.phase));st.sig={};render();
+    })});
+  }
+  function renderBudidaya(){
+    var C=cur(),a=analyze(C),ph=a.ph;
+    $$('#cropchips .chip').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.k===st.crop))});
+    $$('#phasechips .chip').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.p===st.phase))});
+    $('#vlabel').textContent='Kesesuaian tanah untuk '+a.cr.n.toLowerCase()+' · '+C.name;
+    $('#verdict').setAttribute('data-s',a.verdict[1]);
+    $('#vtext').textContent=a.verdict[0]+' ('+a.score+')';$('#vtext').className='s-'+a.verdict[1];
+    $('#vsub').textContent=a.off===0?'Semua kondisi tanah sesuai kebutuhan fase ini.':(a.off===1?'Satu hal perlu diperbaiki.':'Beberapa hal perlu diperbaiki.');
+    $('#needtbl').innerHTML='<span class="label">Kelembapan</span><b>'+ph.m[0]+'–'+ph.m[1]+'%</b><span class="label">Keasaman (pH)</span><b>'+ph.ph[0]+'–'+ph.ph[1]+'</b><span class="label">Suhu tanah</span><b>'+ph.t[0]+'–'+ph.t[1]+'°C</b><span class="label">Umur fase</span><b>'+ph.hst+'</b>';
+    $('#phasetip').textContent=ph.tip;
+    var fx=a.fixes.length?a.fixes:[{sev:'',text:'Tidak ada yang perlu diperbaiki. Pertahankan kondisi ini.'}];
+    $('#fixes').innerHTML=fx.map(function(x){return '<li class="'+x.sev+'">'+x.text+'</li>'}).join('');
+    var h='';
+    a.rows.forEach(function(r){
+      var sp=r.smax-r.smin,l=(r.rng[0]-r.smin)/sp*100,w=(r.rng[1]-r.rng[0])/sp*100,p=clamp((r.val-r.smin)/sp*100,0,100);
+      var extra=r.key==='m'?'<div class="sm">10 cm: '+Math.round(C.m[0])+'% · 30 cm: '+Math.round(C.m[1])+'% · 60 cm: '+Math.round(C.m[2])+'%</div>':'';
+      h+='<div class="card"><div class="t2"><span class="label">'+r.label+'</span><span class="word s-'+r.cls+'">'+r.word+'</span></div>'+
          '<div class="num">'+r.val.toFixed(r.dec)+r.unit+'</div>'+
-         '<div class="rng"><div class="ideal" style="left:'+a+'%;width:'+(b-a)+'%"></div><i style="left:'+p+'%"></i></div>'+
-         '<div class="rrow"><span>'+r.smin+r.unit+'</span><span>Ideal: '+r.rng[0]+'–'+r.rng[1]+r.unit+'</span><span>'+r.smax+r.unit+'</span></div>'+
-         '<div class="sm" style="margin-top:4px">'+r.msg+'</div></div>';
+         '<div class="rng"><div class="ideal" style="left:'+l+'%;width:'+w+'%"></div><i style="left:'+p+'%"></i></div>'+
+         '<div class="rrow"><span>'+r.smin+r.unit+'</span><span>Kebutuhan: '+r.rng[0]+'–'+r.rng[1]+r.unit+'</span><span>'+r.smax+r.unit+'</span></div>'+extra+'</div>';
     });
     $('#params').innerHTML=h;
   }
-  function renderPompa(){
-    $('#pstate').textContent=st.pump?'Menyala':'Mati';
-    $('#pstate').className='num '+(st.pump?'s-hi':'');
-    $('#pipeBox').className='card pipe'+(st.pump?' flowon':'');
-    var btn=$('#pbtn');
-    btn.textContent=st.pump?'Matikan pompa':'Nyalakan pompa';
-    btn.className='mainbtn'+(st.pump?' stop':'');
-    btn.disabled=st.live||st.auto;
-    $('#mAuto').setAttribute('aria-pressed',String(st.auto));
-    $('#mMan').setAttribute('aria-pressed',String(!st.auto));
-    $('#mAuto').disabled=st.live;$('#mMan').disabled=st.live;
-    $('#thM').disabled=st.live;$('#thP').disabled=st.live;
-    $('#thv').textContent=st.th+'%';
-    $('#flv').textContent=st.flow;
-    $('#phint').textContent=st.live?'Pompa dipantau dari sensor dan tidak bisa dikontrol dari sini.'
-      :(st.auto?'Pompa diatur otomatis. Pilih "Manual" untuk menyalakan sendiri.':'Mode manual: tekan tombol di atas untuk '+(st.pump?'mematikan':'menyalakan')+' pompa.');
-    var ph=st.pumpHist,n=ph.length,starts=0,on=0,last=-1;
-    for(var i=0;i<n;i++){
-      if(ph[i]){on++;last=i;if(i===0||!ph[i-1])starts++}
+  function renderAir(){
+    var C=cur(),a=analyze(C),ph=a.ph,f=forecast(C,a);
+    $('#wcard').setAttribute('data-s',f.cls);
+    $('#wtitle').textContent=f.title;$('#wtitle').className='s-'+f.cls;
+    $('#wdetail').textContent=f.d;
+    drawChart(C,ph.m);
+    var rows='';
+    for(var d=0;d<3;d++){
+      var s=C.hist[d],sum=0,mn=100,mx=0;
+      s.forEach(function(v){sum+=v;if(v<mn)mn=v;if(v>mx)mx=v});
+      rows+='<tr><td>'+DEP[d]+'</td><td>'+Math.round(sum/s.length)+'%</td><td>'+Math.round(mn)+'%</td><td>'+Math.round(mx)+'%</td></tr>';
     }
-    var span=(n-1)*st.iv/60;
-    $('#usageT').textContent='Pemakaian pompa ('+(span>=1?Math.round(span)+' jam':Math.round(span*60)+' menit')+' terakhir)';
-    $('#u1').textContent=starts;
-    $('#u2').textContent=Math.round(on*st.iv*st.flow);
-    $('#u3').textContent=last<0?'-':(last===n-1?'sekarang':fmtDur((n-1-last)*st.iv));
+    $('#tbody').innerHTML=rows;
   }
-  function renderChart(){
+  function drawChart(C,rng){
     var W=600,H=300,pl=40,pr=10,pt=12,pb=28,iw=W-pl-pr,ih=H-pt-pb;
     var colors=['#1D4ED8','#1F7A3A','#8A5A33'],dash=['','10 6','2 7'];
     function y(v){return pt+ih-(v/100)*ih}
     function xp(k,n){return pl+(k+(N-n))/(N-1)*iw}
-    var s='';
-    s+='<rect x="'+pl+'" y="'+y(70)+'" width="'+iw+'" height="'+(y(40)-y(70))+'" fill="#1F7A3A" opacity=".1"/>';
-    var n0=st.pumpHist.length,bw=iw/(N-1);
-    for(var k=0;k<n0;k++){if(st.pumpHist[k])s+='<rect x="'+(xp(k,n0)-bw/2).toFixed(1)+'" y="'+pt+'" width="'+bw.toFixed(1)+'" height="'+ih+'" fill="#1D4ED8" opacity=".13"/>'}
+    var s='<rect x="'+pl+'" y="'+y(rng[1])+'" width="'+iw+'" height="'+Math.max(1,y(rng[0])-y(rng[1]))+'" fill="#1F7A3A" opacity=".13"/>';
     [0,25,50,75,100].forEach(function(g){
-      s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="#E4E8E2" stroke-width="1.5"/>';
-      s+='<text x="2" y="'+(y(g)+4)+'">'+g+'%</text>';
+      s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="#E4E8E2" stroke-width="1.5"/><text x="2" y="'+(y(g)+4)+'">'+g+'%</text>';
     });
-    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(st.th)+'" y2="'+y(st.th)+'" stroke="#1B1F1B" stroke-width="2" stroke-dasharray="6 5"/>';
+    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(rng[0])+'" y2="'+y(rng[0])+'" stroke="#1B1F1B" stroke-width="2" stroke-dasharray="6 5"/>';
     for(var i=0;i<3;i++){
       if(!st.show[i])continue;
-      var h=st.hist[i],n=h.length;if(n<2)continue;
-      var pts=h.map(function(v,k){return xp(k,n).toFixed(1)+','+y(v).toFixed(1)}).join(' ');
-      s+='<polyline points="'+pts+'" fill="none" stroke="'+colors[i]+'" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"'+(dash[i]?' stroke-dasharray="'+dash[i]+'"':'')+'/>';
+      var h=C.hist[i],n=h.length;if(n<2)continue;
+      s+='<polyline points="'+h.map(function(v,k){return xp(k,n).toFixed(1)+','+y(v).toFixed(1)}).join(' ')+'" fill="none" stroke="'+colors[i]+'" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"'+(dash[i]?' stroke-dasharray="'+dash[i]+'"':'')+'/>';
     }
-    var span=(N-1)*st.iv/60;
-    s+='<text x="'+pl+'" y="'+(H-6)+'">'+(span>=1?Math.round(span)+' jam lalu':Math.round(span*60)+' menit lalu')+'</text><text x="'+(W-pr-56)+'" y="'+(H-6)+'">sekarang</text>';
+    s+='<text x="'+pl+'" y="'+(H-6)+'">'+spanText()+' lalu</text><text x="'+(W-pr-56)+'" y="'+(H-6)+'">sekarang</text>';
     $('#chart').innerHTML=s;
-    var rows='';
-    for(var d=0;d<3;d++){
-      var a=st.hist[d],sum=0,mn=100,mx=0;
-      a.forEach(function(v){sum+=v;if(v<mn)mn=v;if(v>mx)mx=v});
-      rows+='<tr><td>'+DEP[d]+'</td><td>'+Math.round(sum/a.length)+'%</td><td>'+Math.round(mn)+'%</td><td>'+Math.round(mx)+'%</td></tr>';
-    }
-    $('#tbody').innerHTML=rows;
   }
-  function renderAlerts(){
-    var a=[];
-    if(st.m[0]<25)a.push(['b','Tanah permukaan sangat kering ('+Math.round(st.m[0])+'%). Segera siram.']);
-    else if(st.m[0]<st.th)a.push(['w','Kelembapan lapisan atas di bawah batas pompa ('+st.th+'%).']);
-    if(st.m[2]>70)a.push(['w','Tanah bagian dalam terlalu basah. Cek saluran air agar akar tidak busuk.']);
-    if(st.ph<5.5)a.push(['w','Tanah asam (pH '+st.ph.toFixed(1)+'). Pertimbangkan pemberian kapur.']);
-    if(st.ph>7.5)a.push(['w','Tanah cenderung basa (pH '+st.ph.toFixed(1)+').']);
-    if(st.t>32)a.push(['w','Suhu tanah tinggi ('+st.t.toFixed(1)+'°C). Mulsa bisa membantu.']);
-    if(!a.length)a.push(['','Semua dalam keadaan baik.']);
-    $('#alerts').innerHTML=a.slice(0,3).map(function(x){return '<li class="'+x[0]+'">'+x[1]+'</li>'}).join('');
+  function waLink(wa,a){
+    var msg='Halo, saya pengguna SoilMate. Lahan "'+($('#lahan').textContent)+'" ('+a.cr.n+', fase '+a.ph.n.toLowerCase()+'). Saya butuh: '+a.needs.map(function(n){return n.t}).join(', ')+'. Apakah tersedia?';
+    return 'https://wa.me/'+(wa||'')+'?text='+encodeURIComponent(msg);
+  }
+  function renderUmkm(){
+    var C=cur(),a=analyze(C),sig=a.needs.map(function(n){return n.t}).join('|')+'|'+$('#lahan').textContent;
+    if(st.sig.umkm===sig)return;st.sig.umkm=sig;
+    $('#needsub').textContent=a.cr.n+', fase '+a.ph.n.toLowerCase()+'. Berdasarkan kondisi tanah dari sensor dan kebutuhan fase tumbuh.';
+    $('#needs').innerHTML=a.needs.map(function(n){
+      return '<div class="item"><div><b>'+n.t+'</b></div><div class="sm">'+n.why+'</div><div><span class="tag'+(n.src==='Dari sensor'?'':' s')+'">'+n.src+'</span></div></div>';
+    }).join('');
+    var cats=a.needs.map(function(n){return n.k});
+    var list=UMKM_DATA.filter(function(u){return u.kat.some(function(k){return cats.indexOf(k)>=0})});
+    $('#umkmlist').innerHTML=list.map(function(u){
+      var match=u.kat.filter(function(k){return cats.indexOf(k)>=0}).map(function(k){return CATS[k]}).join(', ');
+      return '<div class="item"><div><b>'+u.nama+'</b> <span class="tag">Contoh</span></div><div class="sm">'+u.kota+'</div><div class="sm">Menyediakan: '+match+'</div>'+
+        '<div><a class="btn" href="'+waLink(u.wa,a)+'" target="_blank" rel="noopener">Pesan lewat WhatsApp</a></div></div>';
+    }).join('')||'<p class="sm">Belum ada UMKM yang cocok.</p>';
   }
 
   function render(){
+    updateTitik();
     var v=active();
     if(v==='home')renderHome();
     else if(v==='tanah')renderTanah();
-    else if(v==='tanaman')renderTanaman();
-    else if(v==='pompa')renderPompa();
-    else if(v==='riwayat')renderChart();
+    else if(v==='budidaya')renderBudidaya();
+    else if(v==='air')renderAir();
+    else if(v==='umkm')renderUmkm();
+    var cn=$('#conn');
+    if(st.live){$('#dot').className='live';cn.textContent='Terhubung · '+hhmm(st.updated)}
+    else{$('#dot').className='';cn.textContent='Data contoh'}
   }
   function loop(){
     clearInterval(st.timer);
     st.timer=setInterval(function(){if(!st.live){demoTick();render()}},2000);
   }
 
-  /* ---------- ThingSpeak ---------- */
-  function setConn(live,text){st.live=live;$('#dot').className=live?'live':'';$('#conn').textContent=text}
-  function parseFeed(f){return {m:[+f.field1,+f.field2,+f.field3],t:+f.field4,ph:+f.field5,at:+f.field6,ah:+f.field7,pump:+f.field8===1}}
-  function fetchLive(id,key){
-    var url='https://api.thingspeak.com/channels/'+encodeURIComponent(id)+'/feeds.json?results='+N+(key?'&api_key='+encodeURIComponent(key):'');
+  /* ---------- sensor asli (ThingSpeak) ---------- */
+  function fetchPoint(c){
+    var url='https://api.thingspeak.com/channels/'+encodeURIComponent(c.id)+'/feeds.json?results='+N+(c.key?'&api_key='+encodeURIComponent(c.key):'');
     return fetch(url).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(function(d){
-      var feeds=(d.feeds||[]).filter(function(f){return f.field1!==null});
-      if(!feeds.length)throw new Error('belum ada data di channel ini');
-      st.hist=[[],[],[]];st.pumpHist=[];
-      feeds.forEach(function(f){var p=parseFeed(f);for(var i=0;i<3;i++)st.hist[i].push(p.m[i]);st.pumpHist.push(p.pump)});
-      if(feeds.length>1){
-        var t0=new Date(feeds[0].created_at),t1=new Date(feeds[feeds.length-1].created_at);
-        var iv=(t1-t0)/60000/(feeds.length-1);if(isFinite(iv)&&iv>0)st.iv=Math.max(1,iv);
-      }
-      var last=parseFeed(feeds[feeds.length-1]);
-      st.m=last.m;st.t=last.t;st.ph=last.ph;st.at=last.at;st.ah=last.ah;st.pump=last.pump;
+      var feeds=(d.feeds||[]).filter(function(f){return f.field1!==null&&f.field1!==undefined});
+      if(!feeds.length)throw new Error('belum ada data');
+      var p={name:c.name||'Titik',m:[0,0,0],t:0,ph:0,hist:[[],[],[]],iv:0,last:null};
+      feeds.forEach(function(f){for(var i=0;i<3;i++)p.hist[i].push(+f['field'+(i+1)])});
+      var l=feeds[feeds.length-1];
+      p.m=[+l.field1,+l.field2,+l.field3];p.t=+l.field4;p.ph=+l.field5;p.last=new Date(l.created_at);
+      if(feeds.length>1){var iv=(new Date(l.created_at)-new Date(feeds[0].created_at))/60000/(feeds.length-1);if(isFinite(iv)&&iv>0)p.iv=iv}
+      return p;
+    });
+  }
+  function loadLive(){
+    var act=st.cfg.filter(function(c){return c.id.trim()});
+    return Promise.all(act.map(function(c){return fetchPoint(c).catch(function(e){throw new Error((c.name||'Titik')+': '+e.message)})})).then(function(res){
+      st.pts=res;var ivs=res.map(function(p){return p.iv}).filter(Boolean);if(ivs.length)st.iv=Math.max(1,ivs[0]);
+      st.updated=new Date(Math.max.apply(null,res.map(function(p){return p.last.getTime()})));
+      if(st.sel!=='all'&&!st.pts[st.sel])st.sel='all';
     });
   }
   function connect(){
-    var id=$('#chid').value.trim(),key=$('#chkey').value.trim();
-    if(!id){$('#msg').textContent='Isi Channel ID dulu.';return}
+    readCfg();
+    if(!st.cfg.some(function(c){return c.id.trim()})){$('#msg').textContent='Isi minimal satu Channel ID.';return}
     $('#msg').textContent='Menghubungkan…';
-    fetchLive(id,key).then(function(){
-      setConn(true,'Terhubung ke sensor');$('#msg').textContent='Berhasil terhubung.';
-      try{localStorage.setItem('soilmate',JSON.stringify({id:id,key:key}))}catch(e){}
-      clearInterval(st.poll);
-      st.poll=setInterval(function(){fetchLive(id,key).then(render).catch(function(){})},20000);
-      render();
+    loadLive().then(function(){
+      st.live=true;st.sel='all';save('soilmate-cfg',JSON.stringify(st.cfg));
+      $('#msg').textContent='Berhasil terhubung ('+st.pts.length+' titik).';
+      buildTitik();clearInterval(st.poll);
+      st.poll=setInterval(function(){loadLive().then(render).catch(function(){})},20000);
+      st.sig={};render();
     }).catch(function(e){$('#msg').textContent='Gagal: '+e.message+'. Cek Channel ID atau API key.'});
   }
   function backToDemo(){
-    clearInterval(st.poll);setConn(false,'Data contoh');$('#msg').textContent='';
-    st.iv=10;st.hist=[[],[],[]];st.pumpHist=[];st.m=[48,48,56];for(var q=0;q<70;q++)demoTick();render();
+    clearInterval(st.poll);st.live=false;st.sel='all';makeDemo();buildTitik();
+    $('#msg').textContent='';st.sig={};render();
   }
 
-  /* ---------- kontrol ---------- */
-  $('#mAuto').addEventListener('click',function(){st.auto=true;render()});
-  $('#mMan').addEventListener('click',function(){st.auto=false;render()});
-  $('#pbtn').addEventListener('click',function(){if(!st.live&&!st.auto){setPump(!st.pump);st.pumpHist[st.pumpHist.length-1]=st.pump;render()}});
-  $('#thM').addEventListener('click',function(){st.th=clamp(st.th-5,15,60);render()});
-  $('#thP').addEventListener('click',function(){st.th=clamp(st.th+5,15,60);render()});
-  $('#flM').addEventListener('click',function(){st.flow=clamp(st.flow-1,1,100);render()});
-  $('#flP').addEventListener('click',function(){st.flow=clamp(st.flow+1,1,100);render()});
+  /* ---------- setelan & penyimpanan ---------- */
+  function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function buildCfg(){
+    $('#cfgrows').innerHTML=st.cfg.map(function(c,i){
+      return '<div class="cfgrow"><input type="text" data-i="'+i+'" data-f="name" value="'+c.name+'" aria-label="Nama titik '+(i+1)+'"><input type="text" data-i="'+i+'" data-f="id" value="'+c.id+'" placeholder="Channel ID" inputmode="numeric" aria-label="Channel ID titik '+(i+1)+'"><input type="text" data-i="'+i+'" data-f="key" value="'+c.key+'" placeholder="Read API Key (jika privat)" aria-label="API key titik '+(i+1)+'"></div>';
+    }).join('');
+  }
+  function readCfg(){$$('#cfgrows input').forEach(function(inp){st.cfg[+inp.dataset.i][inp.dataset.f]=inp.value.trim()})}
+  function applyFs(){document.documentElement.style.fontSize=FS[st.fs]+'%';save('soilmate-fs',String(st.fs))}
+
   $('#connect').addEventListener('click',connect);
   $('#demo').addEventListener('click',backToDemo);
-  document.querySelectorAll('.chip.series').forEach(function(c){
-    c.addEventListener('click',function(){var i=+c.dataset.s;st.show[i]=!st.show[i];c.setAttribute('aria-pressed',String(st.show[i]));renderChart()});
-  });
-  var cc='';Object.keys(CROPS).forEach(function(k){cc+='<button class="chip" data-k="'+k+'" aria-pressed="false">'+CROPS[k].n+'</button>'});
-  $('#cropchips').innerHTML=cc;
-  document.querySelectorAll('#cropchips .chip').forEach(function(b){
-    b.addEventListener('click',function(){st.crop=b.dataset.k;try{localStorage.setItem('soilmate-crop',st.crop)}catch(e){}render()});
-  });
+  $$('.chip.series').forEach(function(c){c.addEventListener('click',function(){var i=+c.dataset.s;st.show[i]=!st.show[i];c.setAttribute('aria-pressed',String(st.show[i]));render()})});
   $('#csv').addEventListener('click',function(){
-    var n=st.hist[0].length,lines=['menit_lalu,lembap_10cm,lembap_30cm,lembap_60cm,pompa'];
-    for(var k=0;k<n;k++)lines.push([((n-1-k)*st.iv).toFixed(0),st.hist[0][k].toFixed(1),st.hist[1][k].toFixed(1),st.hist[2][k].toFixed(1),st.pumpHist[k]?1:0].join(','));
+    var C=cur(),n=C.hist[0].length,lines=['menit_lalu,lembap_10cm,lembap_30cm,lembap_60cm'];
+    for(var k=0;k<n;k++)lines.push([((n-1-k)*st.iv).toFixed(0),C.hist[0][k].toFixed(1),C.hist[1][k].toFixed(1),C.hist[2][k].toFixed(1)].join(','));
     var blob=new Blob([lines.join('\n')],{type:'text/csv'}),a=document.createElement('a');
     a.href=URL.createObjectURL(blob);a.download='soilmate-data.csv';document.body.appendChild(a);a.click();a.remove();
   });
-  function applyFs(){document.documentElement.style.fontSize=FS[st.fs]+'%';try{localStorage.setItem('soilmate-fs',String(st.fs))}catch(e){}}
   $('#fsP').addEventListener('click',function(){st.fs=Math.min(FS.length-1,st.fs+1);applyFs()});
   $('#fsM').addEventListener('click',function(){st.fs=Math.max(0,st.fs-1);applyFs()});
   $('#lname').addEventListener('input',function(e){
-    var v=e.target.value.trim();$('#lahan').textContent=v||'Lahan saya';
-    try{localStorage.setItem('soilmate-lahan',v)}catch(x){}
+    var v=e.target.value.trim();$('#lahan').textContent=v||'Lahan saya';save('soilmate-lahan',v);st.sig={};
   });
-  try{
-    var sv=JSON.parse(localStorage.getItem('soilmate')||'null');if(sv){$('#chid').value=sv.id||'';$('#chkey').value=sv.key||''}
-    var f=parseInt(localStorage.getItem('soilmate-fs'),10);if(f>=0&&f<FS.length){st.fs=f;applyFs()}
-    var c=localStorage.getItem('soilmate-crop');if(c&&CROPS[c])st.crop=c;
-    var ln=localStorage.getItem('soilmate-lahan');if(ln){$('#lname').value=ln;$('#lahan').textContent=ln}
-  }catch(e){}
 
+  /* ---------- mulai ---------- */
+  $('#gaugeHome').innerHTML=gaugeSVG();
+  $('#soilTanah').innerHTML=soilSVG('x');
+  try{
+    var c=localStorage.getItem('soilmate-crop');if(c&&CROPS[c])st.crop=c;
+    var ps=parseInt(localStorage.getItem('soilmate-phase'),10);if(ps>=0&&ps<CROPS[st.crop].phases.length)st.phase=ps;
+    var f=parseInt(localStorage.getItem('soilmate-fs'),10);if(f>=0&&f<FS.length){st.fs=f;applyFs()}
+    var ln=localStorage.getItem('soilmate-lahan');if(ln){$('#lname').value=ln;$('#lahan').textContent=ln}
+    var cf=JSON.parse(localStorage.getItem('soilmate-cfg')||'null');
+    if(cf&&cf.length)cf.slice(0,MAXP).forEach(function(x,i){st.cfg[i]={name:x.name||('Titik '+(i+1)),id:x.id||'',key:x.key||''}});
+  }catch(e){}
+  buildCfg();buildCrops();makeDemo();buildTitik();
   go(location.hash.slice(1)||'home',false);
   loop();
 })();
